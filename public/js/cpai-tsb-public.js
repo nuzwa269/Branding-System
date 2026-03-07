@@ -21,10 +21,21 @@
 		}
 
 		init() {
+			this.renderTitle();
 			this.renderNav();
 			this.renderContent();
 			this.updateLanguage();
 			this.attachEvents();
+		}
+
+
+		renderTitle() {
+			const title = (this.data.strings && this.data.strings.title) ? this.data.strings.title : '';
+			if (!title) {
+				return;
+			}
+			const titleEl = this.elements.wrapper.find('.cpai-tsb-main-title');
+			titleEl.html(String(title).replace(/\n/g, '<br>'));
 		}
 
 		renderNav() {
@@ -333,20 +344,13 @@
 		}
 
 		getPlatformTheme(platform) {
-			const slug = `${platform.id || ''} ${platform.name_en || ''}`.toLowerCase();
-			if (slug.indexOf('facebook') !== -1) {
-				return { accent: '#1877f2', soft: '#edf4ff', gradient: 'linear-gradient(135deg, #1877f2 0%, #4c8df7 100%)' };
-			}
-			if (slug.indexOf('youtube') !== -1) {
-				return { accent: '#ff0033', soft: '#fff1f2', gradient: 'linear-gradient(135deg, #ff0033 0%, #ff4d4d 100%)' };
-			}
-			if (slug.indexOf('instagram') !== -1) {
-				return { accent: '#d62976', soft: '#fff1f7', gradient: 'linear-gradient(135deg, #f58529 0%, #dd2a7b 45%, #8134af 75%, #515bd4 100%)' };
-			}
-			if (slug.indexOf('tiktok') !== -1) {
-				return { accent: '#111827', soft: '#f3f4f6', gradient: 'linear-gradient(135deg, #111827 0%, #1f2937 100%)' };
-			}
-			return { accent: platform.color || '#2563eb', soft: '#eff6ff', gradient: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)' };
+			const accent = platform.color || '#2563eb';
+			const soft = platform.light_color || '#eff6ff';
+			return {
+				accent,
+				soft,
+				gradient: `linear-gradient(135deg, ${soft} 0%, ${accent} 100%)`
+			};
 		}
 	}
 

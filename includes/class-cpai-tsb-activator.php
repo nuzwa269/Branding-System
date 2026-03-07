@@ -41,10 +41,10 @@ class CPAI_TSB_Activator {
 	 */
 	private static function default_platforms() {
 		return array(
-			'facebook'  => self::build_platform_defaults( 'facebook', 'Facebook', '#1877F2', 'Analyze Facebook' ),
-			'youtube'   => self::build_platform_defaults( 'youtube', 'YouTube', '#FF0000', 'Analyze YouTube' ),
-			'instagram' => self::build_platform_defaults( 'instagram', 'Instagram', '#C13584', 'Analyze Instagram' ),
-			'tiktok'    => self::build_platform_defaults( 'tiktok', 'TikTok', '#000000', 'Analyze TikTok' ),
+			'facebook'  => self::build_platform_defaults( 'facebook', 'Facebook', '#1877F2', 'Analyze Facebook', '#e8f1ff', 10, 'fab fa-facebook-f' ),
+			'youtube'   => self::build_platform_defaults( 'youtube', 'YouTube', '#FF0000', 'Analyze YouTube', '#fff1f2', 20, 'fab fa-youtube' ),
+			'instagram' => self::build_platform_defaults( 'instagram', 'Instagram', '#C13584', 'Analyze Instagram', '#fff1f7', 30, 'fab fa-instagram' ),
+			'tiktok'    => self::build_platform_defaults( 'tiktok', 'TikTok', '#000000', 'Analyze TikTok', '#f3f4f6', 40, 'fab fa-tiktok' ),
 		);
 	}
 
@@ -58,16 +58,18 @@ class CPAI_TSB_Activator {
 	 *
 	 * @return array
 	 */
-	private static function build_platform_defaults( $id, $name, $color, $button_label ) {
+	private static function build_platform_defaults( $id, $name, $color, $button_label, $light_color = "#eff6ff", $sort_order = 10, $icon = "" ) {
 		return array(
 			'id'           => $id,
 			'name_en'      => $name,
 			'name_ur'      => '',
-			'icon'         => '',
+			'icon'         => $icon,
 			'enabled'      => 1,
+			'sort_order'   => absint( $sort_order ),
 			'title'        => $name . ' Optimization',
 			'description'  => 'Manage your ' . $name . '-specific checklist and guidance.',
 			'color'        => $color,
+			'light_color'  => $light_color,
 			'button_label' => $button_label,
 			'questions'    => array( self::empty_question( 1 ) ),
 		);

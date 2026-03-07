@@ -3,50 +3,33 @@
 	<p><?php esc_html_e( 'Manage your active platforms and reserve space for future channels.', 'coachpro-ai-teacher-social-branding' ); ?></p>
 
 	<?php
-	$dashboard_cards = array(
-		array(
-			'name'       => 'Facebook',
-			'source_slug'=> 'facebook',
-			'brand_class'=> 'is-facebook',
-			'logo'       => 'f',
-		),
-		array(
-			'name'       => 'X / Twitter',
-			'source_slug'=> 'youtube',
-			'brand_class'=> 'is-x',
-			'logo'       => 'X',
-		),
-		array(
-			'name'       => 'Instagram',
-			'source_slug'=> 'instagram',
-			'brand_class'=> 'is-instagram',
-			'logo'       => '◎',
-		),
-		array(
-			'name'       => 'LinkedIn',
-			'source_slug'=> 'tiktok',
-			'brand_class'=> 'is-linkedin',
-			'logo'       => 'in',
-		),
-	);
+	$max_cards       = 8;
+	$platform_count  = count( $platforms );
+	$placeholder_qty = max( 1, $max_cards - $platform_count );
 	?>
 
 	<div class="cpai-tsb-platform-grid" role="list" aria-label="<?php esc_attr_e( 'Platform cards', 'coachpro-ai-teacher-social-branding' ); ?>">
-		<?php foreach ( $dashboard_cards as $card ) : ?>
+		<?php foreach ( $platforms as $source_slug => $platform ) : ?>
 			<?php
-			$source_slug    = $card['source_slug'];
-			$platform       = isset( $platforms[ $source_slug ] ) ? $platforms[ $source_slug ] : null;
-			$question_count = $platform ? count( $platform['questions'] ) : 0;
+			$question_count = isset( $platform['questions'] ) ? count( $platform['questions'] ) : 0;
 			$manage_url     = admin_url( 'admin.php?page=' . $this->plugin_name . '-' . $source_slug );
+			$card_title     = ! empty( $platform['name_en'] ) ? $platform['name_en'] : ucfirst( $source_slug );
+			$logo_text      = ! empty( $platform['icon'] ) ? '' : strtoupper( substr( $card_title, 0, 2 ) );
 			?>
-			<article class="cpai-tsb-platform-card <?php echo esc_attr( $card['brand_class'] ); ?>" role="listitem">
+			<article class="cpai-tsb-platform-card" role="listitem" style="background: linear-gradient(135deg, <?php echo esc_attr( $platform['light_color'] ); ?> 0%, <?php echo esc_attr( $platform['color'] ); ?> 100%);">
 				<div class="cpai-tsb-platform-head">
-					<span class="cpai-tsb-platform-logo" aria-hidden="true"><?php echo esc_html( $card['logo'] ); ?></span>
+					<span class="cpai-tsb-platform-logo" aria-hidden="true">
+						<?php if ( ! empty( $platform['icon'] ) ) : ?>
+							<i class="<?php echo esc_attr( $platform['icon'] ); ?>"></i>
+						<?php else : ?>
+							<?php echo esc_html( $logo_text ); ?>
+						<?php endif; ?>
+					</span>
 					<div>
-						<h2><?php echo esc_html( $card['name'] ); ?></h2>
+						<h2><?php echo esc_html( $card_title ); ?></h2>
 						<p class="cpai-tsb-status">
 							<span class="cpai-tsb-status-icon" aria-hidden="true">✓</span>
-							<?php esc_html_e( 'Active', 'coachpro-ai-teacher-social-branding' ); ?>
+							<?php echo ! empty( $platform['enabled'] ) ? esc_html__( 'Active', 'coachpro-ai-teacher-social-branding' ) : esc_html__( 'Inactive', 'coachpro-ai-teacher-social-branding' ); ?>
 						</p>
 					</div>
 				</div>
@@ -62,11 +45,11 @@
 			</article>
 		<?php endforeach; ?>
 
-		<?php for ( $index = 0; $index < 4; $index++ ) : ?>
-			<div class="cpai-tsb-placeholder-card" role="listitem">
+		<?php for ( $index = 0; $index < $placeholder_qty; $index++ ) : ?>
+			<a class="cpai-tsb-placeholder-card" role="listitem" href="<?php echo esc_url( admin_url( 'admin.php?page=' . $this->plugin_name . '-settings#cpai-add-platform' ) ); ?>">
 				<span>+</span>
 				<p><?php esc_html_e( 'Add Platform', 'coachpro-ai-teacher-social-branding' ); ?></p>
-			</div>
+			</a>
 		<?php endfor; ?>
 	</div>
 </div>

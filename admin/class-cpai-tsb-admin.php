@@ -11,13 +11,6 @@ class CPAI_TSB_Admin {
 	private $plugin_name;
 	private $version;
 
-	/**
-	 * Supported platform slugs.
-	 *
-	 * @var string[]
-	 */
-	private $platform_slugs = array( 'facebook', 'youtube', 'instagram', 'tiktok' );
-
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
@@ -39,6 +32,7 @@ class CPAI_TSB_Admin {
 
 	public function add_plugin_admin_menu() {
 		$capability = 'manage_options';
+		$platforms  = $this->get_platforms();
 
 		add_menu_page(
 			__( 'CoachPro AI Social Branding', 'coachpro-ai-teacher-social-branding' ),
@@ -59,8 +53,8 @@ class CPAI_TSB_Admin {
 			array( $this, 'display_dashboard_page' )
 		);
 
-		foreach ( $this->platform_slugs as $platform_slug ) {
-			$platform_title = ucfirst( $platform_slug );
+		foreach ( $platforms as $platform_slug => $platform ) {
+			$platform_title = ! empty( $platform['name_en'] ) ? $platform['name_en'] : ucfirst( $platform_slug );
 			add_submenu_page(
 				$this->plugin_name,
 				sprintf( __( '%s Controls', 'coachpro-ai-teacher-social-branding' ), $platform_title ),
@@ -111,7 +105,8 @@ class CPAI_TSB_Admin {
 		$this->render_admin_page(
 			'page-settings.php',
 			array(
-				'settings' => $this->get_settings(),
+				'settings'  => $this->get_settings(),
+				'platforms' => $this->get_platforms(),
 			)
 		);
 	}
@@ -146,6 +141,14 @@ class CPAI_TSB_Admin {
 				$this->handle_save_settings();
 				$this->redirect_with_message( $this->plugin_name . '-settings', 'settings_saved' );
 				break;
+			case 'save_platform_directory':
+				$this->handle_save_platform_directory();
+				$this->redirect_with_message( $this->plugin_name . '-settings', 'platforms_saved' );
+				break;
+			case 'add_platform':
+				$this->handle_add_platform();
+				$this->redirect_with_message( $this->plugin_name . '-settings', 'platform_added' );
+				break;
 			default:
 				$this->redirect_with_message( $this->plugin_name, 'invalid_action' );
 				break;
@@ -164,12 +167,12 @@ class CPAI_TSB_Admin {
 		$platform['enabled']      = isset( $posted_platform['enabled'] ) ? 1 : 0;
 		$platform['title']        = isset( $posted_platform['title'] ) ? sanitize_text_field( $posted_platform['title'] ) : $platform['title'];
 		$platform['description']  = isset( $posted_platform['description'] ) ? sanitize_textarea_field( $posted_platform['description'] ) : $platform['description'];
-		$platform['color']        = isset( $posted_platform['color'] ) ? sanitize_hex_color( $posted_platform['color'] ) : $platform['color'];
+		$platform['color']        = isset( $posted_platform['color'] ) ? ( sanitize_hex_color( $posted_platform['color'] ) ?: $platform['color'] ) : $platform['color'];
+		$platform['light_color']  = isset( $posted_platform['light_color'] ) ? ( sanitize_hex_color( $posted_platform['light_color'] ) ?: $platform['light_color'] ) : $platform['light_color'];
 		$platform['button_label'] = isset( $posted_platform['button_label'] ) ? sanitize_text_field( $posted_platform['button_label'] ) : $platform['button_label'];
 
-		$questions = isset( $posted_platform['questions'] ) && is_array( $posted_platform['questions'] ) ? $posted_platform['questions'] : array();
-		$platform['questions'] = array();
-
+		$questions              = isset( $posted_platform['questions'] ) && is_array( $posted_platform['questions'] ) ? $posted_platform['questions'] : array();
+		$platform['questions']  = array();
 		foreach ( $questions as $question_index => $question ) {
 			$platform['questions'][] = $this->normalize_question_payload( $question, $question_index + 1 );
 		}
@@ -178,7 +181,7 @@ class CPAI_TSB_Admin {
 			$platform['questions'][] = $this->get_empty_question( 1 );
 		}
 
-		$platforms[ $platform_slug ] = $platform;
+		$platforms[ $platform_slug ] = $this->normalize_platform_payload( $platform, $platform_slug );
 		update_option( 'cpai_tsb_platforms', $platforms );
 	}
 
@@ -216,6 +219,62 @@ class CPAI_TSB_Admin {
 		update_option( 'cpai_tsb_settings', $settings );
 	}
 
+	private function handle_save_platform_directory() {
+		$platforms         = $this->get_platforms();
+		$posted_platforms  = isset( $_POST['platforms'] ) && is_array( $_POST['platforms'] ) ? wp_unslash( $_POST['platforms'] ) : array();
+
+		foreach ( $posted_platforms as $slug => $posted_platform ) {
+			$slug = sanitize_key( $slug );
+			if ( ! isset( $platforms[ $slug ] ) ) {
+				continue;
+			}
+
+			$existing                      = $platforms[ $slug ];
+			$existing['name_en']           = isset( $posted_platform['name_en'] ) ? sanitize_text_field( $posted_platform['name_en'] ) : $existing['name_en'];
+			$existing['name_ur']           = isset( $posted_platform['name_ur'] ) ? sanitize_text_field( $posted_platform['name_ur'] ) : $existing['name_ur'];
+			$existing['icon']              = isset( $posted_platform['icon'] ) ? sanitize_text_field( $posted_platform['icon'] ) : $existing['icon'];
+			$existing['enabled']           = isset( $posted_platform['enabled'] ) ? 1 : 0;
+			$existing['sort_order']        = isset( $posted_platform['sort_order'] ) ? absint( $posted_platform['sort_order'] ) : $existing['sort_order'];
+			$existing['color']             = isset( $posted_platform['color'] ) ? ( sanitize_hex_color( $posted_platform['color'] ) ?: $existing['color'] ) : $existing['color'];
+			$existing['light_color']       = isset( $posted_platform['light_color'] ) ? ( sanitize_hex_color( $posted_platform['light_color'] ) ?: $existing['light_color'] ) : $existing['light_color'];
+			$platforms[ $slug ]            = $this->normalize_platform_payload( $existing, $slug );
+		}
+
+		update_option( 'cpai_tsb_platforms', $platforms );
+	}
+
+	private function handle_add_platform() {
+		$new_platform = isset( $_POST['new_platform'] ) && is_array( $_POST['new_platform'] ) ? wp_unslash( $_POST['new_platform'] ) : array();
+		$platforms    = $this->get_platforms();
+
+		$requested_slug = isset( $new_platform['slug'] ) ? sanitize_title( $new_platform['slug'] ) : '';
+		if ( empty( $requested_slug ) ) {
+			$requested_slug = isset( $new_platform['name_en'] ) ? sanitize_title( $new_platform['name_en'] ) : '';
+		}
+
+		$slug = $this->generate_unique_slug( $requested_slug, array_keys( $platforms ) );
+		if ( empty( $slug ) ) {
+			return;
+		}
+
+		$defaults = $this->build_platform_defaults(
+			$slug,
+			isset( $new_platform['name_en'] ) ? sanitize_text_field( $new_platform['name_en'] ) : ucfirst( $slug ),
+			isset( $new_platform['color'] ) ? sanitize_hex_color( $new_platform['color'] ) : '#2563eb',
+			sprintf( 'Analyze %s', ucfirst( $slug ) )
+		);
+
+		$defaults['name_ur']     = isset( $new_platform['name_ur'] ) ? sanitize_text_field( $new_platform['name_ur'] ) : '';
+		$defaults['icon']        = isset( $new_platform['icon'] ) ? sanitize_text_field( $new_platform['icon'] ) : '';
+		$defaults['enabled']     = isset( $new_platform['enabled'] ) ? 1 : 0;
+		$defaults['sort_order']  = isset( $new_platform['sort_order'] ) ? absint( $new_platform['sort_order'] ) : ( count( $platforms ) + 1 ) * 10;
+		$defaults['light_color'] = isset( $new_platform['light_color'] ) ? ( sanitize_hex_color( $new_platform['light_color'] ) ?: '#eff6ff' ) : '#eff6ff';
+
+		$platforms[ $slug ] = $this->normalize_platform_payload( $defaults, $slug );
+
+		update_option( 'cpai_tsb_platforms', $platforms );
+	}
+
 	private function get_platforms() {
 		$stored = get_option( 'cpai_tsb_platforms', array() );
 
@@ -229,12 +288,69 @@ class CPAI_TSB_Admin {
 		foreach ( $defaults as $slug => $default_platform ) {
 			if ( ! isset( $stored[ $slug ] ) ) {
 				$stored[ $slug ] = $default_platform;
-			} else {
-				$stored[ $slug ]['questions'] = $this->normalize_questions_for_runtime( isset( $stored[ $slug ]['questions'] ) ? $stored[ $slug ]['questions'] : array() );
 			}
 		}
 
+		foreach ( $stored as $slug => $platform ) {
+			$stored[ $slug ] = $this->normalize_platform_payload( $platform, $slug );
+		}
+
+		uasort( $stored, array( $this, 'compare_platform_sort_order' ) );
+
 		return $stored;
+	}
+
+	private function compare_platform_sort_order( $a, $b ) {
+		$order_a = isset( $a['sort_order'] ) ? absint( $a['sort_order'] ) : 0;
+		$order_b = isset( $b['sort_order'] ) ? absint( $b['sort_order'] ) : 0;
+
+		if ( $order_a === $order_b ) {
+			$name_a = isset( $a['name_en'] ) ? strtolower( $a['name_en'] ) : '';
+			$name_b = isset( $b['name_en'] ) ? strtolower( $b['name_en'] ) : '';
+			return strcmp( $name_a, $name_b );
+		}
+
+		return $order_a - $order_b;
+	}
+
+	private function normalize_platform_payload( $platform, $fallback_slug ) {
+		$platform = is_array( $platform ) ? $platform : array();
+		$slug     = isset( $platform['id'] ) ? sanitize_key( $platform['id'] ) : sanitize_key( $fallback_slug );
+		$default  = $this->build_platform_defaults( $slug, isset( $platform['name_en'] ) ? $platform['name_en'] : ucfirst( $slug ), isset( $platform['color'] ) ? $platform['color'] : '#2563eb', isset( $platform['button_label'] ) ? $platform['button_label'] : sprintf( 'Analyze %s', ucfirst( $slug ) ) );
+		$platform = wp_parse_args( $platform, $default );
+
+		$platform['id']           = $slug;
+		$platform['name_en']      = sanitize_text_field( $platform['name_en'] );
+		$platform['name_ur']      = sanitize_text_field( $platform['name_ur'] );
+		$platform['icon']         = sanitize_text_field( $platform['icon'] );
+		$platform['enabled']      = ! empty( $platform['enabled'] ) ? 1 : 0;
+		$platform['title']        = sanitize_text_field( $platform['title'] );
+		$platform['description']  = sanitize_textarea_field( $platform['description'] );
+		$platform['color']        = sanitize_hex_color( $platform['color'] ) ?: $default['color'];
+		$platform['light_color']  = sanitize_hex_color( $platform['light_color'] ) ?: $default['light_color'];
+		$platform['button_label'] = sanitize_text_field( $platform['button_label'] );
+		$platform['sort_order']   = isset( $platform['sort_order'] ) ? absint( $platform['sort_order'] ) : 0;
+		$platform['questions']    = $this->normalize_questions_for_runtime( isset( $platform['questions'] ) ? $platform['questions'] : array() );
+
+		return $platform;
+	}
+
+	private function generate_unique_slug( $requested_slug, $existing_slugs ) {
+		$base_slug = sanitize_key( $requested_slug );
+		if ( empty( $base_slug ) ) {
+			return '';
+		}
+
+		if ( ! in_array( $base_slug, $existing_slugs, true ) ) {
+			return $base_slug;
+		}
+
+		$suffix = 2;
+		while ( in_array( $base_slug . '-' . $suffix, $existing_slugs, true ) ) {
+			++$suffix;
+		}
+
+		return $base_slug . '-' . $suffix;
 	}
 
 	private function get_settings() {
@@ -251,23 +367,25 @@ class CPAI_TSB_Admin {
 
 	private function get_default_platforms() {
 		return array(
-			'facebook'  => $this->build_platform_defaults( 'facebook', 'Facebook', '#1877F2', 'Analyze Facebook' ),
-			'youtube'   => $this->build_platform_defaults( 'youtube', 'YouTube', '#FF0000', 'Analyze YouTube' ),
-			'instagram' => $this->build_platform_defaults( 'instagram', 'Instagram', '#C13584', 'Analyze Instagram' ),
-			'tiktok'    => $this->build_platform_defaults( 'tiktok', 'TikTok', '#000000', 'Analyze TikTok' ),
+			'facebook'  => $this->build_platform_defaults( 'facebook', 'Facebook', '#1877F2', 'Analyze Facebook', '#e8f1ff', 10, 'fab fa-facebook-f' ),
+			'youtube'   => $this->build_platform_defaults( 'youtube', 'YouTube', '#FF0000', 'Analyze YouTube', '#fff1f2', 20, 'fab fa-youtube' ),
+			'instagram' => $this->build_platform_defaults( 'instagram', 'Instagram', '#C13584', 'Analyze Instagram', '#fff1f7', 30, 'fab fa-instagram' ),
+			'tiktok'    => $this->build_platform_defaults( 'tiktok', 'TikTok', '#000000', 'Analyze TikTok', '#f3f4f6', 40, 'fab fa-tiktok' ),
 		);
 	}
 
-	private function build_platform_defaults( $slug, $name, $color, $button_label ) {
+	private function build_platform_defaults( $slug, $name, $color, $button_label, $light_color = '#eff6ff', $sort_order = 10, $icon = '' ) {
 		return array(
 			'id'           => $slug,
 			'name_en'      => $name,
 			'name_ur'      => '',
-			'icon'         => '',
+			'icon'         => $icon,
 			'enabled'      => 1,
+			'sort_order'   => absint( $sort_order ),
 			'title'        => sprintf( __( '%s Optimization', 'coachpro-ai-teacher-social-branding' ), $name ),
 			'description'  => sprintf( __( 'Manage your %s-specific checklist and guidance.', 'coachpro-ai-teacher-social-branding' ), $name ),
 			'color'        => $color,
+			'light_color'  => $light_color,
 			'button_label' => $button_label,
 			'questions'    => array( $this->get_empty_question( 1 ) ),
 		);
@@ -324,9 +442,9 @@ class CPAI_TSB_Admin {
 	}
 
 	private function normalize_question_payload( $question, $position ) {
-		$question      = is_array( $question ) ? $question : array();
-		$default_id    = 'q' . absint( $position );
-		$sanitized_id  = isset( $question['id'] ) ? sanitize_key( $question['id'] ) : '';
+		$question       = is_array( $question ) ? $question : array();
+		$default_id     = 'q' . absint( $position );
+		$sanitized_id   = isset( $question['id'] ) ? sanitize_key( $question['id'] ) : '';
 		$instruction_en = isset( $question['instruction_en'] ) && is_array( $question['instruction_en'] ) ? $question['instruction_en'] : array();
 		$instruction_ur = isset( $question['instruction_ur'] ) && is_array( $question['instruction_ur'] ) ? $question['instruction_ur'] : array();
 
@@ -353,7 +471,7 @@ class CPAI_TSB_Admin {
 	private function migrate_legacy_platforms( $legacy_platforms ) {
 		$migrated = array();
 
-		foreach ( $legacy_platforms as $legacy_platform ) {
+		foreach ( $legacy_platforms as $index => $legacy_platform ) {
 			if ( empty( $legacy_platform['id'] ) ) {
 				continue;
 			}
@@ -365,7 +483,9 @@ class CPAI_TSB_Admin {
 					$slug,
 					isset( $legacy_platform['name_en'] ) ? $legacy_platform['name_en'] : ucfirst( $slug ),
 					isset( $legacy_platform['color'] ) ? $legacy_platform['color'] : '#2271b1',
-					sprintf( 'Analyze %s', ucfirst( $slug ) )
+					sprintf( 'Analyze %s', ucfirst( $slug ) ),
+					'#eff6ff',
+					( $index + 1 ) * 10
 				)
 			);
 			$migrated[ $slug ]['enabled']      = 1;
@@ -390,10 +510,10 @@ class CPAI_TSB_Admin {
 	private function redirect_with_message( $page, $message ) {
 		wp_safe_redirect(
 			add_query_arg(
-			array(
-				'page'             => $page,
-				'cpai_tsb_message' => $message,
-			),
+				array(
+					'page'             => $page,
+					'cpai_tsb_message' => $message,
+				),
 				admin_url( 'admin.php' )
 			)
 		);
