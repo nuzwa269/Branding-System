@@ -24,7 +24,13 @@ class CPAI_TSB_Admin {
 	}
 
 	public function enqueue_styles() {
-		// Reserved for admin styles.
+		wp_enqueue_style(
+			$this->plugin_name . '-admin',
+			plugin_dir_url( __FILE__ ) . 'css/cpai-tsb-admin.css',
+			array(),
+			$this->version,
+			'all'
+		);
 	}
 
 	public function enqueue_scripts() {
