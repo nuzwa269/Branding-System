@@ -31,12 +31,18 @@ class CPAI_TSB_Public {
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cpai-tsb-public.js', array( 'jquery' ), $this->version, false );
 
-		$platforms = get_option( 'cpai_tsb_platforms', array() );
+		$platforms = $this->get_public_platforms();
+		$settings  = wp_parse_args(
+			get_option( 'cpai_tsb_settings', array() ),
+			array(
+				'dashboard_title' => "COACHPRO AI\nTeacher's Social Branding System",
+			)
+		);
 
 		wp_localize_script( $this->plugin_name, 'cpai_tsb_data', array(
 			'platforms' => $platforms,
 			'strings' => array(
-				'title' => "COACHPRO AI\nTeacher's Social Branding System",
+				'title' => $settings['dashboard_title'],
 				'completed' => 'Questions Completed',
 				'next_phase' => 'اگلے مرحلے پر جائیں', // Go to next phase
 				'finish' => 'Finish',
@@ -46,6 +52,31 @@ class CPAI_TSB_Public {
 				'great_ur' => 'بہت اچھا! اب اگلے سوال کی طرف بڑھیں۔'
 			)
 		));
+	}
+
+
+
+	/**
+	 * Get frontend-ready platform list.
+	 *
+	 * @return array
+	 */
+	private function get_public_platforms() {
+		$stored_platforms = get_option( 'cpai_tsb_platforms', array() );
+
+		if ( isset( $stored_platforms[0] ) ) {
+			return $stored_platforms;
+		}
+
+		$platforms = array();
+		foreach ( $stored_platforms as $platform ) {
+			if ( empty( $platform['enabled'] ) ) {
+				continue;
+			}
+			$platforms[] = $platform;
+		}
+
+		return $platforms;
 	}
 
 	public function render_shortcode( $atts ) {
