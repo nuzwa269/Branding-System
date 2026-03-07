@@ -16,6 +16,7 @@
 			<tr><th scope="row"><?php esc_html_e( 'Title', 'coachpro-ai-teacher-social-branding' ); ?></th><td><input type="text" class="regular-text" name="platform[title]" value="<?php echo esc_attr( $platform['title'] ); ?>" /></td></tr>
 			<tr><th scope="row"><?php esc_html_e( 'Description', 'coachpro-ai-teacher-social-branding' ); ?></th><td><textarea class="large-text" rows="3" name="platform[description]"><?php echo esc_textarea( $platform['description'] ); ?></textarea></td></tr>
 			<tr><th scope="row"><?php esc_html_e( 'Theme Color', 'coachpro-ai-teacher-social-branding' ); ?></th><td><input type="color" name="platform[color]" value="<?php echo esc_attr( $platform['color'] ); ?>" /></td></tr>
+			<tr><th scope="row"><?php esc_html_e( 'Light Background', 'coachpro-ai-teacher-social-branding' ); ?></th><td><input type="color" name="platform[light_color]" value="<?php echo esc_attr( $platform['light_color'] ); ?>" /></td></tr>
 			<tr><th scope="row"><?php esc_html_e( 'Button Label', 'coachpro-ai-teacher-social-branding' ); ?></th><td><input type="text" class="regular-text" name="platform[button_label]" value="<?php echo esc_attr( $platform['button_label'] ); ?>" /></td></tr>
 		</table>
 

@@ -138,6 +138,18 @@
 	font-weight: 600;
 }
 
+
+.cpai-tsb-platform-card {
+	color: #fff;
+}
+
+.cpai-tsb-platform-logo i {
+	font-size: 16px;
+}
+
+.cpai-tsb-placeholder-card {
+	text-decoration: none;
+}
 @media (max-width: 1200px) {
 	.cpai-tsb-platform-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));

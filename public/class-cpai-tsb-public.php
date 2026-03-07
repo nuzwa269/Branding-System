@@ -14,18 +14,13 @@ class CPAI_TSB_Public {
 
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+		$this->version     = $version;
 	}
 
 	public function enqueue_styles() {
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cpai-tsb-public.css', array(), $this->version, 'all' );
-		// Enqueue FontAwesome for icons
 		wp_enqueue_style( 'font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css', array(), '5.15.4' );
-		// Enqueue Urdu font
 		wp_enqueue_style( 'jameel-noori-nastaleeq', 'https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap', array(), null );
-		// Note: Jameel Noori isn't on Google Fonts directly usually, using Noto Nastaliq as fallback or assume custom font face in CSS.
-		// But let's try to stick to standard available fonts or include the font file.
-		// For this example, I'll rely on CSS @font-face or system fallback, but Noto Nastaliq is a good alternative if Jameel isn't hosted.
 	}
 
 	public function enqueue_scripts() {
@@ -39,22 +34,24 @@ class CPAI_TSB_Public {
 			)
 		);
 
-		wp_localize_script( $this->plugin_name, 'cpai_tsb_data', array(
-			'platforms' => $platforms,
-			'strings' => array(
-				'title' => $settings['dashboard_title'],
-				'completed' => 'Questions Completed',
-				'next_phase' => 'اگلے مرحلے پر جائیں', // Go to next phase
-				'finish' => 'Finish',
-				'yes' => 'Yes',
-				'no' => 'No',
-				'great_en' => 'Great! You can move to the next question.',
-				'great_ur' => 'بہت اچھا! اب اگلے سوال کی طرف بڑھیں۔'
+		wp_localize_script(
+			$this->plugin_name,
+			'cpai_tsb_data',
+			array(
+				'platforms' => $platforms,
+				'strings'   => array(
+					'title'      => $settings['dashboard_title'],
+					'completed'  => 'Questions Completed',
+					'next_phase' => 'اگلے مرحلے پر جائیں',
+					'finish'     => 'Finish',
+					'yes'        => 'Yes',
+					'no'         => 'No',
+					'great_en'   => 'Great! You can move to the next question.',
+					'great_ur'   => 'بہت اچھا! اب اگلے سوال کی طرف بڑھیں۔',
+				),
 			)
-		));
+		);
 	}
-
-
 
 	/**
 	 * Get frontend-ready platform list.
@@ -75,26 +72,54 @@ class CPAI_TSB_Public {
 			return $legacy_platforms;
 		}
 
-		$platforms = array();
+		$stored_platforms = wp_parse_args( $stored_platforms, $this->get_default_platforms() );
+		$platforms        = array();
 		foreach ( $stored_platforms as $platform ) {
-			if ( empty( $platform['enabled'] ) ) {
+			$normalized = $this->normalize_platform_for_public( $platform );
+			if ( empty( $normalized['enabled'] ) ) {
 				continue;
 			}
-			$platforms[] = $this->normalize_platform_for_public( $platform );
+			$platforms[] = $normalized;
 		}
+
+		usort(
+			$platforms,
+			function( $a, $b ) {
+				$order_a = isset( $a['sort_order'] ) ? absint( $a['sort_order'] ) : 0;
+				$order_b = isset( $b['sort_order'] ) ? absint( $b['sort_order'] ) : 0;
+				return $order_a - $order_b;
+			}
+		);
 
 		return $platforms;
 	}
 
 	private function normalize_platform_for_public( $platform ) {
-		$questions = isset( $platform['questions'] ) && is_array( $platform['questions'] ) ? $platform['questions'] : array();
+		$platform  = is_array( $platform ) ? $platform : array();
+		$slug      = isset( $platform['id'] ) ? sanitize_key( $platform['id'] ) : '';
+		$fallbacks = $this->build_platform_defaults( $slug, isset( $platform['name_en'] ) ? $platform['name_en'] : ucfirst( $slug ), isset( $platform['color'] ) ? $platform['color'] : '#2563eb', isset( $platform['button_label'] ) ? $platform['button_label'] : sprintf( 'Analyze %s', ucfirst( $slug ) ) );
+		$platform  = wp_parse_args( $platform, $fallbacks );
+
+		$questions            = isset( $platform['questions'] ) && is_array( $platform['questions'] ) ? $platform['questions'] : array();
 		$normalized_questions = array();
 
 		foreach ( $questions as $index => $question ) {
 			$normalized_questions[] = $this->normalize_question_for_public( $question, $index + 1 );
 		}
 
-		$platform['questions'] = $normalized_questions;
+		if ( empty( $normalized_questions ) ) {
+			$normalized_questions[] = $this->normalize_question_for_public( array(), 1 );
+		}
+
+		$platform['id']          = $slug;
+		$platform['name_en']     = isset( $platform['name_en'] ) ? (string) $platform['name_en'] : ucfirst( $slug );
+		$platform['name_ur']     = isset( $platform['name_ur'] ) ? (string) $platform['name_ur'] : '';
+		$platform['icon']        = isset( $platform['icon'] ) ? (string) $platform['icon'] : '';
+		$platform['enabled']     = ! empty( $platform['enabled'] ) ? 1 : 0;
+		$platform['color']       = sanitize_hex_color( $platform['color'] ) ?: '#2563eb';
+		$platform['light_color'] = sanitize_hex_color( $platform['light_color'] ) ?: '#eff6ff';
+		$platform['sort_order']  = isset( $platform['sort_order'] ) ? absint( $platform['sort_order'] ) : 0;
+		$platform['questions']   = $normalized_questions;
 
 		return $platform;
 	}
@@ -125,10 +150,43 @@ class CPAI_TSB_Public {
 		);
 	}
 
+	private function get_default_platforms() {
+		return array(
+			'facebook'  => $this->build_platform_defaults( 'facebook', 'Facebook', '#1877F2', 'Analyze Facebook', '#e8f1ff', 10, 'fab fa-facebook-f' ),
+			'youtube'   => $this->build_platform_defaults( 'youtube', 'YouTube', '#FF0000', 'Analyze YouTube', '#fff1f2', 20, 'fab fa-youtube' ),
+			'instagram' => $this->build_platform_defaults( 'instagram', 'Instagram', '#C13584', 'Analyze Instagram', '#fff1f7', 30, 'fab fa-instagram' ),
+			'tiktok'    => $this->build_platform_defaults( 'tiktok', 'TikTok', '#000000', 'Analyze TikTok', '#f3f4f6', 40, 'fab fa-tiktok' ),
+		);
+	}
+
+	private function build_platform_defaults( $slug, $name, $color, $button_label, $light_color = '#eff6ff', $sort_order = 10, $icon = '' ) {
+		return array(
+			'id'           => $slug,
+			'name_en'      => $name,
+			'name_ur'      => '',
+			'icon'         => $icon,
+			'enabled'      => 1,
+			'sort_order'   => absint( $sort_order ),
+			'title'        => $name . ' Optimization',
+			'description'  => 'Manage your ' . $name . '-specific checklist and guidance.',
+			'color'        => $color,
+			'light_color'  => $light_color,
+			'button_label' => $button_label,
+			'questions'    => array(
+				array(
+					'id'             => 'q1',
+					'text_en'        => '',
+					'text_ur'        => '',
+					'instruction_en' => array( 'title' => '', 'steps' => array(), 'tips' => array(), 'tool' => '' ),
+					'instruction_ur' => array( 'title' => '', 'steps' => array(), 'tips' => array(), 'tool' => '' ),
+				),
+			),
+		);
+	}
+
 	public function render_shortcode( $atts ) {
 		ob_start();
 		include 'partials/public-display.php';
 		return ob_get_clean();
 	}
-
 }
