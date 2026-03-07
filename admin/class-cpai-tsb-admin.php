@@ -170,28 +170,12 @@ class CPAI_TSB_Admin {
 		$questions = isset( $posted_platform['questions'] ) && is_array( $posted_platform['questions'] ) ? $posted_platform['questions'] : array();
 		$platform['questions'] = array();
 
-		foreach ( $questions as $question ) {
-			if ( empty( $question['text_en'] ) && empty( $question['text_ur'] ) ) {
-				continue;
-			}
+		foreach ( $questions as $question_index => $question ) {
+			$platform['questions'][] = $this->normalize_question_payload( $question, $question_index + 1 );
+		}
 
-			$platform['questions'][] = array(
-				'id'             => isset( $question['id'] ) ? sanitize_key( $question['id'] ) : uniqid( 'q', false ),
-				'text_en'        => isset( $question['text_en'] ) ? sanitize_text_field( $question['text_en'] ) : '',
-				'text_ur'        => isset( $question['text_ur'] ) ? sanitize_text_field( $question['text_ur'] ) : '',
-				'instruction_en' => array(
-					'title' => isset( $question['instruction_en']['title'] ) ? sanitize_text_field( $question['instruction_en']['title'] ) : '',
-					'steps' => $this->sanitize_lines( isset( $question['instruction_en']['steps'] ) ? $question['instruction_en']['steps'] : '' ),
-					'tips'  => $this->sanitize_lines( isset( $question['instruction_en']['tips'] ) ? $question['instruction_en']['tips'] : '' ),
-					'tool'  => isset( $question['instruction_en']['tool'] ) ? wp_kses_post( $question['instruction_en']['tool'] ) : '',
-				),
-				'instruction_ur' => array(
-					'title' => isset( $question['instruction_ur']['title'] ) ? sanitize_text_field( $question['instruction_ur']['title'] ) : '',
-					'steps' => $this->sanitize_lines( isset( $question['instruction_ur']['steps'] ) ? $question['instruction_ur']['steps'] : '' ),
-					'tips'  => $this->sanitize_lines( isset( $question['instruction_ur']['tips'] ) ? $question['instruction_ur']['tips'] : '' ),
-					'tool'  => isset( $question['instruction_ur']['tool'] ) ? wp_kses_post( $question['instruction_ur']['tool'] ) : '',
-				),
-			);
+		if ( empty( $platform['questions'] ) ) {
+			$platform['questions'][] = $this->get_empty_question( 1 );
 		}
 
 		$platforms[ $platform_slug ] = $platform;
@@ -245,6 +229,8 @@ class CPAI_TSB_Admin {
 		foreach ( $defaults as $slug => $default_platform ) {
 			if ( ! isset( $stored[ $slug ] ) ) {
 				$stored[ $slug ] = $default_platform;
+			} else {
+				$stored[ $slug ]['questions'] = $this->normalize_questions_for_runtime( isset( $stored[ $slug ]['questions'] ) ? $stored[ $slug ]['questions'] : array() );
 			}
 		}
 
@@ -308,9 +294,60 @@ class CPAI_TSB_Admin {
 	}
 
 	private function sanitize_lines( $value ) {
-		$lines = preg_split( '/\r\n|\r|\n/', sanitize_textarea_field( $value ) );
+		if ( is_array( $value ) ) {
+			$lines = $value;
+		} else {
+			$lines = preg_split( '/\r\n|\r|\n/', sanitize_textarea_field( $value ) );
+		}
+
+		$lines = array_map( 'sanitize_text_field', $lines );
 		$lines = array_filter( array_map( 'trim', $lines ) );
+
 		return array_values( $lines );
+	}
+
+	private function normalize_questions_for_runtime( $questions ) {
+		if ( ! is_array( $questions ) ) {
+			return array( $this->get_empty_question( 1 ) );
+		}
+
+		$normalized = array();
+		foreach ( $questions as $index => $question ) {
+			$normalized[] = $this->normalize_question_payload( $question, $index + 1 );
+		}
+
+		if ( empty( $normalized ) ) {
+			$normalized[] = $this->get_empty_question( 1 );
+		}
+
+		return $normalized;
+	}
+
+	private function normalize_question_payload( $question, $position ) {
+		$question      = is_array( $question ) ? $question : array();
+		$default_id    = 'q' . absint( $position );
+		$sanitized_id  = isset( $question['id'] ) ? sanitize_key( $question['id'] ) : '';
+		$instruction_en = isset( $question['instruction_en'] ) && is_array( $question['instruction_en'] ) ? $question['instruction_en'] : array();
+		$instruction_ur = isset( $question['instruction_ur'] ) && is_array( $question['instruction_ur'] ) ? $question['instruction_ur'] : array();
+
+		return array(
+			'id'             => ! empty( $sanitized_id ) ? $sanitized_id : $default_id,
+			'text_en'        => isset( $question['text_en'] ) ? sanitize_text_field( $question['text_en'] ) : '',
+			'text_ur'        => isset( $question['text_ur'] ) ? sanitize_text_field( $question['text_ur'] ) : '',
+			'instruction_en' => $this->normalize_instruction_payload( $instruction_en ),
+			'instruction_ur' => $this->normalize_instruction_payload( $instruction_ur ),
+		);
+	}
+
+	private function normalize_instruction_payload( $instruction ) {
+		$instruction = is_array( $instruction ) ? $instruction : array();
+
+		return array(
+			'title' => isset( $instruction['title'] ) ? sanitize_text_field( $instruction['title'] ) : '',
+			'steps' => $this->sanitize_lines( isset( $instruction['steps'] ) ? $instruction['steps'] : '' ),
+			'tips'  => $this->sanitize_lines( isset( $instruction['tips'] ) ? $instruction['tips'] : '' ),
+			'tool'  => isset( $instruction['tool'] ) ? wp_kses_post( $instruction['tool'] ) : '',
+		);
 	}
 
 	private function migrate_legacy_platforms( $legacy_platforms ) {

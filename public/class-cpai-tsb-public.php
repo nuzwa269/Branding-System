@@ -65,7 +65,14 @@ class CPAI_TSB_Public {
 		$stored_platforms = get_option( 'cpai_tsb_platforms', array() );
 
 		if ( isset( $stored_platforms[0] ) ) {
-			return $stored_platforms;
+			$legacy_platforms = array();
+			foreach ( $stored_platforms as $platform ) {
+				if ( ! empty( $platform['enabled'] ) ) {
+					$legacy_platforms[] = $this->normalize_platform_for_public( $platform );
+				}
+			}
+
+			return $legacy_platforms;
 		}
 
 		$platforms = array();
@@ -73,10 +80,49 @@ class CPAI_TSB_Public {
 			if ( empty( $platform['enabled'] ) ) {
 				continue;
 			}
-			$platforms[] = $platform;
+			$platforms[] = $this->normalize_platform_for_public( $platform );
 		}
 
 		return $platforms;
+	}
+
+	private function normalize_platform_for_public( $platform ) {
+		$questions = isset( $platform['questions'] ) && is_array( $platform['questions'] ) ? $platform['questions'] : array();
+		$normalized_questions = array();
+
+		foreach ( $questions as $index => $question ) {
+			$normalized_questions[] = $this->normalize_question_for_public( $question, $index + 1 );
+		}
+
+		$platform['questions'] = $normalized_questions;
+
+		return $platform;
+	}
+
+	private function normalize_question_for_public( $question, $position ) {
+		$question = is_array( $question ) ? $question : array();
+
+		$instruction_en = isset( $question['instruction_en'] ) && is_array( $question['instruction_en'] ) ? $question['instruction_en'] : array();
+		$instruction_ur = isset( $question['instruction_ur'] ) && is_array( $question['instruction_ur'] ) ? $question['instruction_ur'] : array();
+
+		return array(
+			'id'             => ! empty( $question['id'] ) ? sanitize_key( $question['id'] ) : 'q' . absint( $position ),
+			'text_en'        => isset( $question['text_en'] ) ? (string) $question['text_en'] : '',
+			'text_ur'        => isset( $question['text_ur'] ) ? (string) $question['text_ur'] : '',
+			'instruction_en' => $this->normalize_instruction_for_public( $instruction_en ),
+			'instruction_ur' => $this->normalize_instruction_for_public( $instruction_ur ),
+		);
+	}
+
+	private function normalize_instruction_for_public( $instruction ) {
+		$instruction = is_array( $instruction ) ? $instruction : array();
+
+		return array(
+			'title' => isset( $instruction['title'] ) ? (string) $instruction['title'] : '',
+			'steps' => isset( $instruction['steps'] ) && is_array( $instruction['steps'] ) ? array_values( $instruction['steps'] ) : array(),
+			'tips'  => isset( $instruction['tips'] ) && is_array( $instruction['tips'] ) ? array_values( $instruction['tips'] ) : array(),
+			'tool'  => isset( $instruction['tool'] ) ? (string) $instruction['tool'] : '',
+		);
 	}
 
 	public function render_shortcode( $atts ) {
