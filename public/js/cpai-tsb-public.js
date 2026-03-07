@@ -86,9 +86,12 @@
 		}
 
 		createQuestionCard(question, platformId, index) {
-			const card = $(`<div class="cpai-question-card" id="q-card-${platformId}-${question.id}" data-id="${question.id}"></div>`);
+			const questionId = question.id || `q${index + 1}`;
+			const textEn = question.text_en || '';
+			const textUr = question.text_ur || '';
+			const card = $(`<div class="cpai-question-card" id="q-card-${platformId}-${questionId}" data-id="${questionId}"></div>`);
 
-			const text = $(`<div class="cpai-question-text" data-en="${question.text_en}" data-ur="${question.text_ur}">${question.text_en}</div>`);
+			const text = $(`<div class="cpai-question-text" data-en="${textEn}" data-ur="${textUr}">${textEn}</div>`);
 
 			const options = $(`
 				<div class="cpai-options">
@@ -98,12 +101,14 @@
 			`);
 
 			// Instruction Panel
+			const instructionEn = question.instruction_en || { title: '', steps: [], tips: [], tool: '' };
+			const instructionUr = question.instruction_ur || { title: '', steps: [], tips: [], tool: '' };
 			const instructions = $(`
 				<div class="cpai-instruction-panel">
-					<div class="cpai-instruction-title" data-en="${question.instruction_en.title}" data-ur="${question.instruction_ur.title}"></div>
+					<div class="cpai-instruction-title" data-en="${instructionEn.title || ''}" data-ur="${instructionUr.title || ''}"></div>
 					<div class="cpai-steps-list-container"></div>
 					<div class="cpai-tips-block-container"></div>
-					<div class="cpai-tool-placeholder">${question.instruction_en.tool || ''}</div>
+					<div class="cpai-tool-placeholder-container"></div>
 				</div>
 			`);
 
@@ -114,8 +119,18 @@
 
 			// Store instruction data for later rendering based on lang
 			card.data('instructions', {
-				en: question.instruction_en,
-				ur: question.instruction_ur
+				en: {
+					title: instructionEn.title || '',
+					steps: Array.isArray(instructionEn.steps) ? instructionEn.steps : [],
+					tips: Array.isArray(instructionEn.tips) ? instructionEn.tips : [],
+					tool: instructionEn.tool || ''
+				},
+				ur: {
+					title: instructionUr.title || '',
+					steps: Array.isArray(instructionUr.steps) ? instructionUr.steps : [],
+					tips: Array.isArray(instructionUr.tips) ? instructionUr.tips : [],
+					tool: instructionUr.tool || ''
+				}
 			});
 
 			return card;
@@ -265,6 +280,11 @@
 			const tipsHTML = content.tips.length ?
 				`<div class="cpai-tips-block"><ul>${content.tips.map(t => `<li>${t}</li>`).join('')}</ul></div>` : '';
 			card.find('.cpai-tips-block-container').html(tipsHTML);
+
+			const toolLabel = lang === 'ur' ? 'Related Tool Placeholder' : 'Related Tool Placeholder';
+			const toolValue = content.tool || '';
+			const toolHTML = `<div class="cpai-tool-placeholder"><strong>${toolLabel}</strong>${toolValue ? `<div>${toolValue}</div>` : ''}</div>`;
+			card.find('.cpai-tool-placeholder-container').html(toolHTML);
 		}
 
 		updateProgress(platformIndex) {
