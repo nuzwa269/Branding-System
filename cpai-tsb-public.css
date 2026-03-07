@@ -1,0 +1,332 @@
+:root {
+    --cpai-primary: #2563eb;
+    --cpai-success: #10b981;
+    --cpai-slate: #f8fafc;
+    --cpai-text: #1e293b;
+    --cpai-border: #e2e8f0;
+    --cpai-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --cpai-font-ur: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+    --cpai-font-en: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Reset/Base */
+.cpai-tsb-wrapper {
+    font-family: var(--cpai-font-en);
+    background-color: var(--cpai-slate);
+    color: var(--cpai-text);
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cpai-tsb-wrapper * {
+    box-sizing: border-box;
+}
+
+/* Static Title */
+.cpai-tsb-main-title {
+    text-align: center;
+    padding: 2rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.2;
+    background: #fff;
+    border-bottom: 1px solid var(--cpai-border);
+}
+
+/* Sticky Header */
+.cpai-tsb-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: white;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 2rem;
+    border-bottom: 1px solid var(--cpai-border);
+}
+
+/* Navigation */
+.cpai-tsb-platforms-nav {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 5px; /* Scrollbar space */
+}
+
+.cpai-platform-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    border: none;
+}
+
+.cpai-platform-tab.active {
+    background: var(--cpai-primary);
+    color: white;
+    transform: scale(1.05);
+}
+
+.cpai-platform-tab i {
+    font-size: 1.2rem;
+}
+
+/* Language Selector */
+.cpai-tsb-language-selector {
+    display: flex;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.cpai-lang-btn {
+    border: none;
+    background: transparent;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #64748b;
+    transition: all 0.2s;
+}
+
+.cpai-lang-btn.active {
+    background: white;
+    color: var(--cpai-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Content Area */
+.cpai-tsb-content {
+    max-width: 800px; /* max-w-3xl roughly */
+    margin: 0 auto;
+    padding: 3rem 1rem;
+    min-height: 60vh;
+}
+
+/* Platform Content Container */
+.cpai-platform-container {
+    display: none;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.cpai-platform-container.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Progress Bar */
+.cpai-progress-container {
+    background: #e2e8f0;
+    border-radius: 999px;
+    height: 10px;
+    width: 100%;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.cpai-progress-bar {
+    height: 100%;
+    background: var(--cpai-success);
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.cpai-progress-text {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+/* Question Cards */
+.cpai-question-card {
+    background: white;
+    border-radius: 12px; /* rounded-xl */
+    box-shadow: var(--cpai-shadow);
+    padding: 2rem; /* p-8 */
+    margin-bottom: 2rem;
+    border: 1px solid var(--cpai-border);
+    transition: all 0.3s ease;
+}
+
+.cpai-question-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+/* RTL Support */
+.cpai-tsb-wrapper[dir="rtl"] {
+    font-family: var(--cpai-font-ur);
+    text-align: right;
+}
+
+.cpai-tsb-wrapper[dir="rtl"] .cpai-question-card {
+    text-align: right;
+}
+
+/* Interaction Buttons */
+.cpai-options {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.cpai-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--cpai-border);
+    background: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    flex: 1;
+    text-align: center;
+}
+
+.cpai-btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.cpai-btn.selected-yes {
+    background: var(--cpai-success);
+    color: white;
+    border-color: var(--cpai-success);
+}
+
+.cpai-btn.selected-no {
+    background: #ef4444; /* Red for No? Or keep neutral until clicked? Requirement says Negative opens panel. Let's make it distinct. */
+    color: white;
+    border-color: #ef4444;
+}
+
+/* Instruction Panel */
+.cpai-instruction-panel {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: #f1f5f9;
+    border-radius: 8px;
+    border-left: 4px solid var(--cpai-primary); /* LTR default */
+    display: none; /* Hidden by default */
+    animation: slideDown 0.4s ease;
+}
+
+.cpai-tsb-wrapper[dir="rtl"] .cpai-instruction-panel {
+    border-left: none;
+    border-right: 4px solid var(--cpai-primary);
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.cpai-instruction-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cpai-primary);
+    margin-bottom: 1rem;
+}
+
+.cpai-steps-list {
+    list-style: decimal;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+.cpai-tsb-wrapper[dir="rtl"] .cpai-steps-list {
+    padding-left: 0;
+    padding-right: 1.5rem;
+}
+
+.cpai-tips-block {
+    background: #e0f2fe; /* Light blue */
+    padding: 1rem;
+    border-radius: 6px;
+    color: #0c4a6e;
+    font-size: 0.95rem;
+}
+
+.cpai-tips-block ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin: 0;
+}
+.cpai-tsb-wrapper[dir="rtl"] .cpai-tips-block ul {
+    padding-left: 0;
+    padding-right: 1.5rem;
+}
+
+/* Success Message */
+.cpai-success-msg {
+    color: var(--cpai-success);
+    font-weight: 600;
+    margin-top: 1rem;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Next Phase Button */
+.cpai-next-phase-btn {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background: var(--cpai-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 3rem;
+    transition: background 0.3s;
+    text-align: center;
+}
+
+.cpai-next-phase-btn:hover {
+    background: #1d4ed8;
+}
+
+/* Loading */
+.cpai-tsb-loading {
+    text-align: center;
+    color: #64748b;
+    font-size: 1.2rem;
+    padding: 4rem;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .cpai-tsb-sticky-header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    .cpai-question-card {
+        padding: 1.5rem;
+    }
+    .cpai-platform-tab span {
+        display: none; /* Hide label on mobile if crowded, keep icon */
+    }
+    .cpai-platform-tab.active span {
+        display: inline; /* Show active label */
+    }
+}
