@@ -1,16 +1,13 @@
 (function( $ ) {
 	'use strict';
 
-	/**
-	 * Main Controller
-	 */
 	class CoachProBrandingSystem {
 		constructor(data) {
 			this.data = data;
 			this.state = {
-				lang: 'en', // Default English
+				lang: 'en',
 				activePlatformIndex: 0,
-				answers: {} // { platformId: { questionId: 'yes'|'no' } }
+				answers: {}
 			};
 
 			this.elements = {
@@ -35,12 +32,10 @@
 			this.data.platforms.forEach((platform, index) => {
 				const isActive = index === this.state.activePlatformIndex ? 'active' : '';
 				const icon = platform.icon ? `<i class="${platform.icon}"></i>` : '';
-				const btn = $(`
-					<button class="cpai-platform-tab ${isActive}" data-index="${index}">
-						${icon}
-						<span class="platform-label">${platform.name_en}</span>
-					</button>
-				`);
+				const btn = $(
+					`<button class="cpai-platform-tab ${isActive}" data-index="${index}">${icon}<span class="platform-label"></span></button>`
+				);
+				btn.find('.platform-label').text(platform.name_en || platform.id || `Platform ${index + 1}`);
 				this.elements.nav.append(btn);
 			});
 		}
@@ -50,106 +45,161 @@
 
 			this.data.platforms.forEach((platform, pIndex) => {
 				const isActive = pIndex === this.state.activePlatformIndex ? 'active' : '';
-				const platformContainer = $(`<div class="cpai-platform-container ${isActive}" data-index="${pIndex}"></div>`);
+				const theme = this.getPlatformTheme(platform);
+				const platformContainer = $(`<section class="cpai-platform-container ${isActive}" data-index="${pIndex}"></section>`);
+				platformContainer.css({
+					'--cpai-platform-accent': theme.accent,
+					'--cpai-platform-soft': theme.soft,
+					'--cpai-platform-gradient': theme.gradient
+				});
 
-				// Apply very light background of brand color if needed, but CSS handles card styles.
-				// Requirement: "Very light shade of brand color as background".
-				// We can set style="background-color: ${hexToLight(platform.color)}" on container or wrapper.
-				// For now, let's keep it clean white/slate as per CSS, maybe apply tint to header or progress.
+				const totalQuestions = Array.isArray(platform.questions) ? platform.questions.length : 0;
+				const progressShell = $(
+					`<div class="cpai-progress-shell">
+						<div class="cpai-progress-head">
+							<h3 class="cpai-progress-title" data-en="Optimization Progress" data-ur="ترقی کی پیشرفت">Optimization Progress</h3>
+							<div class="cpai-progress-text">0 / ${totalQuestions} ${this.data.strings.completed}</div>
+						</div>
+						<div class="cpai-progress-track"><div class="cpai-progress-bar" style="width:0%"></div></div>
+					</div>`
+				);
+				platformContainer.append(progressShell);
 
-				// Progress Bar
-				const progressHTML = `
-					<div class="cpai-progress-container">
-						<div class="cpai-progress-text">0 / 10 ${this.data.strings.completed}</div>
-						<div class="cpai-progress-bar" style="width: 0%"></div>
-					</div>
-				`;
-				platformContainer.append(progressHTML);
-
-				// Questions
-				if (platform.questions && platform.questions.length > 0) {
+				if (totalQuestions > 0) {
 					platform.questions.forEach((q, qIndex) => {
-						const qCard = this.createQuestionCard(q, platform.id, qIndex);
-						platformContainer.append(qCard);
+						platformContainer.append(this.createQuestionCard(q, platform.id, qIndex));
 					});
+				} else {
+					platformContainer.append('<div class="cpai-empty-state">Questions will appear here once platform entries are added.</div>');
 				}
 
-				// Next Phase Button (Hidden by default)
 				const nextBtn = $(`<button class="cpai-next-phase-btn" style="display:none;">${this.data.strings.next_phase}</button>`);
-				nextBtn.on('click', () => {
-					this.switchPlatform(pIndex + 1);
-				});
+				nextBtn.on('click', () => this.switchPlatform(pIndex + 1));
 				platformContainer.append(nextBtn);
-
 				this.elements.content.append(platformContainer);
 			});
 		}
 
 		createQuestionCard(question, platformId, index) {
 			const questionId = question.id || `q${index + 1}`;
-			const textEn = question.text_en || '';
-			const textUr = question.text_ur || '';
-			const card = $(`<div class="cpai-question-card" id="q-card-${platformId}-${questionId}" data-id="${questionId}"></div>`);
+			const model = this.normalizeQuestionModel(question, index);
 
-			const text = $(`<div class="cpai-question-text" data-en="${textEn}" data-ur="${textUr}">${textEn}</div>`);
+			const card = $(`<article class="cpai-question-card" id="q-card-${platformId}-${questionId}" data-id="${questionId}"></article>`);
+			card.data('model', model);
 
-			const options = $(`
-				<div class="cpai-options">
-					<button class="cpai-btn btn-yes" data-val="yes">${this.data.strings.yes}</button>
-					<button class="cpai-btn btn-no" data-val="no">${this.data.strings.no}</button>
-				</div>
-			`);
+			const title = $('<h4 class="cpai-question-text"></h4>')
+				.attr('data-en', model.question.en)
+				.attr('data-ur', model.question.ur)
+				.text(model.question.en);
 
-			// Instruction Panel
-			const instructionEn = question.instruction_en || { title: '', steps: [], tips: [], tool: '' };
-			const instructionUr = question.instruction_ur || { title: '', steps: [], tips: [], tool: '' };
-			const instructions = $(`
-				<div class="cpai-instruction-panel">
-					<div class="cpai-instruction-title" data-en="${instructionEn.title || ''}" data-ur="${instructionUr.title || ''}"></div>
-					<div class="cpai-steps-list-container"></div>
-					<div class="cpai-tips-block-container"></div>
-					<div class="cpai-tool-placeholder-container"></div>
-				</div>
-			`);
+			const comparison = $('<div class="cpai-compare-grid"></div>');
+			comparison.append(this.createComparePanel(model.compare.left, 'left'));
+			comparison.append(this.createComparePanel(model.compare.right, 'right'));
 
-			// Success Message
-			const successMsg = $(`<div class="cpai-success-msg" data-en="${this.data.strings.great_en}" data-ur="${this.data.strings.great_ur}"></div>`);
+			const options = $(
+				`<div class="cpai-options">
+					<button class="cpai-btn btn-no" data-val="no"></button>
+					<button class="cpai-btn btn-yes" data-val="yes"></button>
+				</div>`
+			);
 
-			card.append(text, options, instructions, successMsg);
+			const optimizationPanel = $(
+				`<div class="cpai-optimization-panel">
+					<div class="cpai-optimization-title"></div>
+					<ul class="cpai-suggestion-list"></ul>
+					<div class="cpai-tips-card">
+						<div class="cpai-tips-title" data-en="Professional Tips" data-ur="پروفیشنل ٹپس">Professional Tips</div>
+						<p class="cpai-tips-copy"></p>
+					</div>
+					<div class="cpai-tool-card">
+						<div class="cpai-tool-title" data-en="Related Tool" data-ur="متعلقہ ٹول">Related Tool</div>
+						<div class="cpai-tool-slot"></div>
+					</div>
+				</div>`
+			);
 
-			// Store instruction data for later rendering based on lang
-			card.data('instructions', {
-				en: {
-					title: instructionEn.title || '',
-					steps: Array.isArray(instructionEn.steps) ? instructionEn.steps : [],
-					tips: Array.isArray(instructionEn.tips) ? instructionEn.tips : [],
-					tool: instructionEn.tool || ''
-				},
-				ur: {
-					title: instructionUr.title || '',
-					steps: Array.isArray(instructionUr.steps) ? instructionUr.steps : [],
-					tips: Array.isArray(instructionUr.tips) ? instructionUr.tips : [],
-					tool: instructionUr.tool || ''
-				}
-			});
+			const successMsg = $('<div class="cpai-success-msg" data-en="Great! Moving to the next check." data-ur="بہت خوب! اگلے چیک کی طرف بڑھتے ہیں۔"></div>');
 
+			card.append(title, comparison, options, optimizationPanel, successMsg);
+			this.renderOptimizationPanel(card);
 			return card;
 		}
 
+		createComparePanel(panel, side) {
+			const panelEl = $(`<div class="cpai-compare-panel ${side}"></div>`);
+			const media = $('<div class="cpai-compare-visual" aria-hidden="true"></div>');
+			media.append(`<i class="${panel.icon}"></i>`);
+			const title = $('<div class="cpai-compare-title"></div>').attr('data-en', panel.title.en).attr('data-ur', panel.title.ur).text(panel.title.en);
+			const label = $('<div class="cpai-compare-label"></div>').attr('data-en', panel.label.en).attr('data-ur', panel.label.ur).text(panel.label.en);
+			panelEl.append(media, title, label);
+			return panelEl;
+		}
+
+		normalizeQuestionModel(question, index) {
+			const defaultNumber = index + 1;
+			return {
+				question: {
+					en: question.text_en || `Optimization question placeholder ${defaultNumber}`,
+					ur: question.text_ur || `اصلاحی سوال کا پلیس ہولڈر ${defaultNumber}`
+				},
+				compare: {
+					left: {
+						title: {
+							en: 'Needs Improvement',
+							ur: 'مزید بہتری درکار'
+						},
+						label: {
+							en: 'Less ideal setup',
+							ur: 'کم موزوں مثال'
+						},
+						icon: 'fas fa-layer-group'
+					},
+					right: {
+						title: {
+							en: 'Recommended',
+							ur: 'تجویز کردہ'
+						},
+						label: {
+							en: 'Professional result',
+							ur: 'پیشہ ورانہ نتیجہ'
+						},
+						icon: 'fas fa-award'
+					}
+				},
+				optimization: {
+					en: {
+						title: question.instruction_en && question.instruction_en.title ? question.instruction_en.title : 'Optimization checklist',
+						suggestions: question.instruction_en && Array.isArray(question.instruction_en.steps) && question.instruction_en.steps.length ? question.instruction_en.steps : [
+							'Use a clear branded composition and balanced spacing.',
+							'Keep element hierarchy simple and visually scannable.',
+							'Improve contrast for key UI/profile information.'
+						],
+						tips: question.instruction_en && Array.isArray(question.instruction_en.tips) && question.instruction_en.tips.length ? question.instruction_en.tips[0] : 'Add practical guidance here for future platform-specific content.',
+						tool: question.instruction_en && question.instruction_en.tool ? question.instruction_en.tool : ''
+					},
+					ur: {
+						title: question.instruction_ur && question.instruction_ur.title ? question.instruction_ur.title : 'اصلاحی چیک لسٹ',
+						suggestions: question.instruction_ur && Array.isArray(question.instruction_ur.steps) && question.instruction_ur.steps.length ? question.instruction_ur.steps : [
+							'واضح برانڈڈ ترتیب اور متوازن اسپیسنگ استعمال کریں۔',
+							'عناصر کی درجہ بندی سادہ اور قابلِ فہم رکھیں۔',
+							'اہم معلومات کے لیے بہتر کنٹراسٹ بنائیں۔'
+						],
+						tips: question.instruction_ur && Array.isArray(question.instruction_ur.tips) && question.instruction_ur.tips.length ? question.instruction_ur.tips[0] : 'آئندہ پلیٹ فارم مخصوص مواد کے لیے یہاں عملی رہنمائی شامل کریں۔',
+						tool: question.instruction_ur && question.instruction_ur.tool ? question.instruction_ur.tool : ''
+					}
+				}
+			};
+		}
+
 		attachEvents() {
-			// Platform Tab Click
 			this.elements.nav.on('click', '.cpai-platform-tab', (e) => {
-				const index = $(e.currentTarget).data('index');
-				this.switchPlatform(index);
+				this.switchPlatform($(e.currentTarget).data('index'));
 			});
 
-			// Language Switch
 			this.elements.langBtns.on('click', (e) => {
-				const lang = $(e.currentTarget).data('lang');
-				this.setLanguage(lang);
+				this.setLanguage($(e.currentTarget).data('lang'));
 			});
 
-			// Yes/No Click
 			this.elements.content.on('click', '.cpai-btn', (e) => {
 				const btn = $(e.currentTarget);
 				const card = btn.closest('.cpai-question-card');
@@ -159,55 +209,59 @@
 				const questionId = card.data('id');
 				const isYes = btn.data('val') === 'yes';
 
-				// Handle UI State
 				card.find('.cpai-btn').removeClass('selected-yes selected-no');
+				card.removeClass('is-complete');
 				if (isYes) {
 					btn.addClass('selected-yes');
-					card.find('.cpai-instruction-panel').slideUp();
-					card.find('.cpai-success-msg').show();
+					card.addClass('is-complete');
+					card.find('.cpai-optimization-panel').slideUp(150);
+					card.find('.cpai-success-msg').fadeIn(150);
+					this.moveToNextQuestion(card);
 				} else {
 					btn.addClass('selected-no');
 					card.find('.cpai-success-msg').hide();
-					this.renderInstructions(card);
-					card.find('.cpai-instruction-panel').slideDown();
+					this.renderOptimizationPanel(card);
+					card.find('.cpai-optimization-panel').slideDown(150);
 				}
 
-				// Update State
 				if (!this.state.answers[platformId]) {
 					this.state.answers[platformId] = {};
 				}
 				this.state.answers[platformId][questionId] = isYes ? 'yes' : 'no';
-
-				// Update Progress
 				this.updateProgress(platformIndex);
 			});
 		}
 
+		moveToNextQuestion(currentCard) {
+			const nextCard = currentCard.nextAll('.cpai-question-card').first();
+			if (!nextCard.length) {
+				return;
+			}
+			nextCard.addClass('cpai-focus-pulse');
+			setTimeout(() => nextCard.removeClass('cpai-focus-pulse'), 1200);
+			$('html, body').animate({ scrollTop: nextCard.offset().top - 120 }, 280);
+		}
+
 		switchPlatform(index) {
-			if (index >= this.data.platforms.length) return; // Finished or invalid
+			if (index >= this.data.platforms.length || index < 0) {
+				return;
+			}
 
 			this.state.activePlatformIndex = index;
-
-			// Update Nav
 			this.elements.nav.find('.cpai-platform-tab').removeClass('active');
 			this.elements.nav.find(`.cpai-platform-tab[data-index="${index}"]`).addClass('active');
 
-			// Update Content
 			this.elements.content.find('.cpai-platform-container').removeClass('active').hide();
 			const activeContainer = this.elements.content.find(`.cpai-platform-container[data-index="${index}"]`);
 			activeContainer.addClass('active').fadeIn();
 
-			// Scroll to top
-			$('html, body').animate({
-				scrollTop: this.elements.wrapper.offset().top - 100
-			}, 500);
+			$('html, body').animate({ scrollTop: this.elements.wrapper.offset().top - 100 }, 300);
 		}
 
 		setLanguage(lang) {
 			this.state.lang = lang;
 			this.elements.langBtns.removeClass('active');
 			this.elements.langBtns.filter(`[data-lang="${lang}"]`).addClass('active');
-
 			this.updateLanguage();
 		}
 
@@ -215,108 +269,89 @@
 			const lang = this.state.lang;
 			const isUrdu = lang === 'ur';
 
-			// Wrapper Direction
 			this.elements.wrapper.attr('dir', isUrdu ? 'rtl' : 'ltr');
 
-			// Update Nav Labels
 			this.elements.nav.find('.cpai-platform-tab').each((i, el) => {
 				const label = isUrdu ? this.data.platforms[i].name_ur : this.data.platforms[i].name_en;
-				$(el).find('.platform-label').text(label);
+				$(el).find('.platform-label').text(label || this.data.platforms[i].name_en || 'Platform');
 			});
 
-			// Update Questions Text
-			this.elements.content.find('.cpai-question-text').each((i, el) => {
+			this.elements.content.find('[data-en][data-ur]').each((i, el) => {
 				$(el).text($(el).data(lang));
 			});
 
-			// Update Success Messages
-			this.elements.content.find('.cpai-success-msg').each((i, el) => {
-				$(el).text($(el).data(lang));
-			});
-
-			// Update Instructions (if visible or just pre-update DOM)
 			this.elements.content.find('.cpai-question-card').each((i, el) => {
-				this.renderInstructions($(el));
+				this.renderOptimizationPanel($(el));
 			});
 
-			// Update Next Button
-			// Note: Button text for 'Next Phase' logic might need localization object update
-			// We have 'next_phase' in strings which is Urdu by default in the passed array?
-			// Let's check localization. 'next_phase' => 'اگلے مرحلے پر جائیں'.
-			// We should probably have both en/ur for next button.
-			// Ideally passed from PHP. I passed one string.
-			// Let's assume Next button text is fixed or handles via simple logic.
-			// The requirements said "A button appears... 'اگلے مرحلے پر جائیں'". It didn't specify English version explicitly but implied logic.
-			// Let's stick to the requirement or make it bilingual.
-			const nextText = isUrdu ? 'اگلے مرحلے پر جائیں' : 'Go to Next Phase';
-			$('.cpai-next-phase-btn').text(nextText);
-
-			// Update Yes/No buttons
-			$('.btn-yes').text(this.data.strings.yes); // These strings in PHP might be fixed, need object
-			// Actually passed 'yes' and 'no' in strings.
-			// Wait, PHP strings: 'yes' => 'Yes'.
-			// I need Urdu strings for Yes/No too.
-			// Let's update localization object in PHP or handle here.
-			// Simpler: Just update based on known logic.
+			$('.cpai-next-phase-btn').text(isUrdu ? 'اگلے مرحلے پر جائیں' : 'Go to Next Phase');
 			$('.btn-yes').text(isUrdu ? 'جی ہاں' : 'Yes');
 			$('.btn-no').text(isUrdu ? 'نہیں' : 'No');
 		}
 
-		renderInstructions(card) {
-			const data = card.data('instructions');
+		renderOptimizationPanel(card) {
+			const model = card.data('model');
+			if (!model || !model.optimization) {
+				return;
+			}
 			const lang = this.state.lang;
-			const content = data[lang];
+			const content = model.optimization[lang] || model.optimization.en;
 
-			if (!content) return;
+			card.find('.cpai-optimization-title').text(content.title);
 
-			card.find('.cpai-instruction-title').text(content.title);
+			const list = card.find('.cpai-suggestion-list');
+			list.empty();
+			(content.suggestions || []).forEach((item) => {
+				list.append(`<li><span class="cpai-suggestion-icon"><i class="fas fa-check-circle"></i></span><span>${item}</span></li>`);
+			});
 
-			// Steps
-			const stepsHTML = content.steps.length ?
-				`<ol class="cpai-steps-list">${content.steps.map(s => `<li>${s}</li>`).join('')}</ol>` : '';
-			card.find('.cpai-steps-list-container').html(stepsHTML);
-
-			// Tips
-			const tipsHTML = content.tips.length ?
-				`<div class="cpai-tips-block"><ul>${content.tips.map(t => `<li>${t}</li>`).join('')}</ul></div>` : '';
-			card.find('.cpai-tips-block-container').html(tipsHTML);
-
-			const toolLabel = lang === 'ur' ? 'Related Tool Placeholder' : 'Related Tool Placeholder';
-			const toolValue = content.tool || '';
-			const toolHTML = `<div class="cpai-tool-placeholder"><strong>${toolLabel}</strong>${toolValue ? `<div>${toolValue}</div>` : ''}</div>`;
-			card.find('.cpai-tool-placeholder-container').html(toolHTML);
+			card.find('.cpai-tips-copy').text(content.tips || '');
+			card.find('.cpai-tool-slot').text(content.tool || (lang === 'ur' ? 'یہ حصہ مستقبل کے ٹول انضمام کے لیے محفوظ ہے۔' : 'Reserved for future tool integration.'));
 		}
 
 		updateProgress(platformIndex) {
-			const platformId = this.data.platforms[platformIndex].id;
+			const platform = this.data.platforms[platformIndex];
+			const platformId = platform.id;
 			const answers = this.state.answers[platformId] || {};
 			const count = Object.keys(answers).length;
-			const total = 10; // Fixed requirement
+			const total = Array.isArray(platform.questions) ? platform.questions.length : 0;
 
 			const container = this.elements.content.find(`.cpai-platform-container[data-index="${platformIndex}"]`);
 			const progressBar = container.find('.cpai-progress-bar');
 			const progressText = container.find('.cpai-progress-text');
 			const nextBtn = container.find('.cpai-next-phase-btn');
 
-			const percentage = (count / total) * 100;
+			const percentage = total > 0 ? (count / total) * 100 : 0;
 			progressBar.css('width', `${percentage}%`);
-
-			// Update text
-			// Requirement: "3 / 10 Questions Completed"
-			// Multilingual support for "Questions Completed"?
-			// The PHP string 'completed' was passed.
 			progressText.text(`${count} / ${total} ${this.data.strings.completed}`);
 
-			if (count >= total) {
+			if (total > 0 && count >= total) {
 				nextBtn.fadeIn();
+			} else {
+				nextBtn.hide();
 			}
 		}
 
+		getPlatformTheme(platform) {
+			const slug = `${platform.id || ''} ${platform.name_en || ''}`.toLowerCase();
+			if (slug.indexOf('facebook') !== -1) {
+				return { accent: '#1877f2', soft: '#edf4ff', gradient: 'linear-gradient(135deg, #1877f2 0%, #4c8df7 100%)' };
+			}
+			if (slug.indexOf('youtube') !== -1) {
+				return { accent: '#ff0033', soft: '#fff1f2', gradient: 'linear-gradient(135deg, #ff0033 0%, #ff4d4d 100%)' };
+			}
+			if (slug.indexOf('instagram') !== -1) {
+				return { accent: '#d62976', soft: '#fff1f7', gradient: 'linear-gradient(135deg, #f58529 0%, #dd2a7b 45%, #8134af 75%, #515bd4 100%)' };
+			}
+			if (slug.indexOf('tiktok') !== -1) {
+				return { accent: '#111827', soft: '#f3f4f6', gradient: 'linear-gradient(135deg, #111827 0%, #1f2937 100%)' };
+			}
+			return { accent: platform.color || '#2563eb', soft: '#eff6ff', gradient: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)' };
+		}
 	}
 
-	// Initialize
 	$(document).ready(function() {
-		if ($('#cpai-tsb-wrapper').length) {
+		if ($('#cpai-tsb-wrapper').length && window.cpai_tsb_data && Array.isArray(window.cpai_tsb_data.platforms)) {
 			new CoachProBrandingSystem(window.cpai_tsb_data);
 		}
 	});
