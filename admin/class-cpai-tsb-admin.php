@@ -67,6 +67,15 @@ class CPAI_TSB_Admin {
 
 		add_submenu_page(
 			$this->plugin_name,
+			__( 'Data Import', 'coachpro-ai-teacher-social-branding' ),
+			__( 'Data Import', 'coachpro-ai-teacher-social-branding' ),
+			$capability,
+			$this->plugin_name . '-data-import',
+			array( $this, 'display_data_import_page' )
+		);
+
+		add_submenu_page(
+			$this->plugin_name,
 			__( 'Settings', 'coachpro-ai-teacher-social-branding' ),
 			__( 'Settings', 'coachpro-ai-teacher-social-branding' ),
 			$capability,
@@ -111,6 +120,15 @@ class CPAI_TSB_Admin {
 		);
 	}
 
+	public function display_data_import_page() {
+		$this->render_admin_page(
+			'page-data-import.php',
+			array(
+				'platforms' => $this->get_platforms(),
+			)
+		);
+	}
+
 	public function save_data() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'coachpro-ai-teacher-social-branding' ) );
@@ -149,10 +167,234 @@ class CPAI_TSB_Admin {
 				$this->handle_add_platform();
 				$this->redirect_with_message( $this->plugin_name . '-settings', 'platform_added' );
 				break;
+			case 'import_data':
+				$result = $this->handle_import_data();
+				$this->redirect_with_message( $this->plugin_name . '-data-import', $result );
+				break;
+			case 'export_data':
+				$this->handle_export_data();
+				break;
 			default:
 				$this->redirect_with_message( $this->plugin_name, 'invalid_action' );
 				break;
 		}
+	}
+
+	private function handle_import_data() {
+		$format = isset( $_POST['import_format'] ) ? sanitize_key( wp_unslash( $_POST['import_format'] ) ) : '';
+		$mode   = isset( $_POST['import_mode'] ) ? sanitize_key( wp_unslash( $_POST['import_mode'] ) ) : 'append';
+
+		if ( ! in_array( $format, array( 'csv', 'json' ), true ) ) {
+			return 'import_invalid_format';
+		}
+
+		if ( ! isset( $_FILES['import_file'] ) || empty( $_FILES['import_file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['import_file']['tmp_name'] ) ) {
+			return 'import_missing_file';
+		}
+
+		$rows = 'csv' === $format
+			? $this->parse_import_csv( $_FILES['import_file']['tmp_name'] )
+			: $this->parse_import_json( $_FILES['import_file']['tmp_name'] );
+
+		if ( empty( $rows ) || ! is_array( $rows ) ) {
+			return 'import_no_rows';
+		}
+
+		$platforms = $this->get_platforms();
+
+		if ( 'replace' === $mode ) {
+			foreach ( $platforms as $slug => $platform ) {
+				$platforms[ $slug ]['questions'] = array();
+			}
+		}
+
+		$imported_count = 0;
+		$skipped_count  = 0;
+
+		foreach ( $rows as $position => $row ) {
+			$normalized = $this->normalize_import_row( $row );
+
+			if ( empty( $normalized['platform_name'] ) || empty( $normalized['question_en'] ) || empty( $normalized['suggestion_title_en'] ) ) {
+				++$skipped_count;
+				continue;
+			}
+
+			$platform_slug = $this->resolve_platform_slug( $normalized['platform_name'], $platforms );
+			if ( empty( $platform_slug ) ) {
+				++$skipped_count;
+				continue;
+			}
+
+			if ( ! isset( $platforms[ $platform_slug ] ) ) {
+				$platforms[ $platform_slug ] = $this->build_platform_defaults(
+					$platform_slug,
+					$normalized['platform_name'],
+					'#2563eb',
+					sprintf( 'Analyze %s', $normalized['platform_name'] )
+				);
+				$platforms[ $platform_slug ]['questions'] = array();
+			}
+
+			$platforms[ $platform_slug ]['questions'][] = $this->normalize_question_payload(
+				array(
+					'id'      => 'q' . ( count( $platforms[ $platform_slug ]['questions'] ) + 1 ),
+					'text_en' => $normalized['question_en'],
+					'text_ur' => $normalized['question_ur'],
+					'instruction_en' => array(
+						'title' => $normalized['suggestion_title_en'],
+						'steps' => $normalized['suggestion_steps'],
+						'tips'  => $normalized['tips'],
+						'tool'  => $normalized['related_tool_placeholder'],
+					),
+					'instruction_ur' => array(
+						'title' => $normalized['suggestion_title_ur'],
+						'steps' => $normalized['suggestion_steps'],
+						'tips'  => $normalized['tips'],
+						'tool'  => $normalized['related_tool_placeholder'],
+					),
+				),
+				$position + 1
+			);
+
+			++$imported_count;
+		}
+
+		foreach ( $platforms as $slug => $platform ) {
+			$platforms[ $slug ] = $this->normalize_platform_payload( $platform, $slug );
+		}
+
+		update_option( 'cpai_tsb_platforms', $platforms );
+
+		if ( 0 === $imported_count ) {
+			return 'import_no_valid_rows';
+		}
+
+		return $skipped_count > 0 ? 'imported_with_skips' : 'import_success';
+	}
+
+	private function handle_export_data() {
+		$format    = isset( $_POST['export_format'] ) ? sanitize_key( wp_unslash( $_POST['export_format'] ) ) : 'json';
+		$platforms = $this->get_platforms();
+
+		$rows = array();
+		foreach ( $platforms as $platform ) {
+			foreach ( $platform['questions'] as $question ) {
+				$rows[] = array(
+					'platform_name'             => $platform['name_en'],
+					'question_en'               => $question['text_en'],
+					'question_ur'               => $question['text_ur'],
+					'suggestion_title_en'       => $question['instruction_en']['title'],
+					'suggestion_title_ur'       => $question['instruction_ur']['title'],
+					'suggestion_steps'          => implode( ' | ', $question['instruction_en']['steps'] ),
+					'tips'                      => implode( ' | ', $question['instruction_en']['tips'] ),
+					'related_tool_placeholder'  => $question['instruction_en']['tool'],
+				);
+			}
+		}
+
+		$filename_base = 'cpai-tsb-platform-data-' . gmdate( 'Ymd-His' );
+
+		if ( 'csv' === $format ) {
+			header( 'Content-Type: text/csv; charset=utf-8' );
+			header( 'Content-Disposition: attachment; filename=' . $filename_base . '.csv' );
+
+			$output = fopen( 'php://output', 'w' );
+			fputcsv( $output, array( 'platform_name', 'question_en', 'question_ur', 'suggestion_title_en', 'suggestion_title_ur', 'suggestion_steps', 'tips', 'related_tool_placeholder' ) );
+			foreach ( $rows as $row ) {
+				fputcsv( $output, $row );
+			}
+			fclose( $output );
+			exit;
+		}
+
+		header( 'Content-Type: application/json; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename=' . $filename_base . '.json' );
+		echo wp_json_encode( $rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+		exit;
+	}
+
+	private function normalize_import_row( $row ) {
+		$row = is_array( $row ) ? $row : array();
+
+		return array(
+			'platform_name'             => isset( $row['platform_name'] ) ? sanitize_text_field( $row['platform_name'] ) : '',
+			'question_en'               => isset( $row['question_en'] ) ? sanitize_text_field( $row['question_en'] ) : '',
+			'question_ur'               => isset( $row['question_ur'] ) ? sanitize_text_field( $row['question_ur'] ) : '',
+			'suggestion_title_en'       => isset( $row['suggestion_title_en'] ) ? sanitize_text_field( $row['suggestion_title_en'] ) : '',
+			'suggestion_title_ur'       => isset( $row['suggestion_title_ur'] ) ? sanitize_text_field( $row['suggestion_title_ur'] ) : '',
+			'suggestion_steps'          => $this->sanitize_lines( isset( $row['suggestion_steps'] ) ? $row['suggestion_steps'] : '' ),
+			'tips'                      => $this->sanitize_lines( isset( $row['tips'] ) ? $row['tips'] : '' ),
+			'related_tool_placeholder'  => isset( $row['related_tool_placeholder'] ) ? wp_kses_post( $row['related_tool_placeholder'] ) : '',
+		);
+	}
+
+	private function resolve_platform_slug( $platform_name, $platforms ) {
+		$sanitized_name = sanitize_text_field( $platform_name );
+		$direct_slug    = sanitize_key( $sanitized_name );
+
+		if ( isset( $platforms[ $direct_slug ] ) ) {
+			return $direct_slug;
+		}
+
+		foreach ( $platforms as $slug => $platform ) {
+			if ( 0 === strcasecmp( $sanitized_name, $platform['name_en'] ) || ( ! empty( $platform['name_ur'] ) && 0 === strcasecmp( $sanitized_name, $platform['name_ur'] ) ) ) {
+				return $slug;
+			}
+		}
+
+		return $direct_slug;
+	}
+
+	private function parse_import_json( $path ) {
+		$raw = file_get_contents( $path );
+		if ( false === $raw || '' === trim( $raw ) ) {
+			return array();
+		}
+
+		$decoded = json_decode( $raw, true );
+		if ( JSON_ERROR_NONE !== json_last_error() ) {
+			return array();
+		}
+
+		if ( isset( $decoded['rows'] ) && is_array( $decoded['rows'] ) ) {
+			return $decoded['rows'];
+		}
+
+		return is_array( $decoded ) ? $decoded : array();
+	}
+
+	private function parse_import_csv( $path ) {
+		$handle = fopen( $path, 'r' );
+		if ( ! $handle ) {
+			return array();
+		}
+
+		$headers = fgetcsv( $handle );
+		if ( ! is_array( $headers ) ) {
+			fclose( $handle );
+			return array();
+		}
+
+		$headers = array_map(
+			static function ( $header ) {
+				$header = is_string( $header ) ? $header : '';
+				$header = preg_replace( '/^\xEF\xBB\xBF/', '', $header );
+				return sanitize_key( str_replace( ' ', '_', strtolower( trim( $header ) ) ) );
+			},
+			$headers
+		);
+
+		$rows = array();
+		while ( false !== ( $row = fgetcsv( $handle ) ) ) {
+			if ( empty( array_filter( $row ) ) ) {
+				continue;
+			}
+
+			$rows[] = array_combine( $headers, array_pad( $row, count( $headers ), '' ) );
+		}
+
+		fclose( $handle );
+		return $rows;
 	}
 
 	private function handle_save_platform( $platform_slug ) {
