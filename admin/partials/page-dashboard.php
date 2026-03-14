@@ -13,6 +13,40 @@ foreach ( $platforms as $platform ) {
 $inactive_count = max( 0, $platform_count - $active_count );
 $max_cards      = 8;
 $placeholder_qty = max( 1, $max_cards - $platform_count );
+
+$plugin_pages = array(
+	array(
+		'label'       => __( 'Dashboard', 'coachpro-ai-teacher-social-branding' ),
+		'description' => __( 'Overview and performance summary for all social platforms.', 'coachpro-ai-teacher-social-branding' ),
+		'url'         => admin_url( 'admin.php?page=' . $this->plugin_name ),
+		'type'        => __( 'Core', 'coachpro-ai-teacher-social-branding' ),
+	),
+);
+
+foreach ( $platforms as $source_slug => $platform ) {
+	$plugin_pages[] = array(
+		'label'       => ! empty( $platform['name_en'] ) ? $platform['name_en'] : ucfirst( $source_slug ),
+		'description' => __( 'Manage platform profile, prompt, and content questions.', 'coachpro-ai-teacher-social-branding' ),
+		'url'         => admin_url( 'admin.php?page=' . $this->plugin_name . '-' . $source_slug ),
+		'type'        => __( 'Platform', 'coachpro-ai-teacher-social-branding' ),
+	);
+}
+
+$plugin_pages[] = array(
+	'label'       => __( 'Data Import', 'coachpro-ai-teacher-social-branding' ),
+	'description' => __( 'Import or export data with CSV and JSON options.', 'coachpro-ai-teacher-social-branding' ),
+	'url'         => admin_url( 'admin.php?page=' . $this->plugin_name . '-data-import' ),
+	'type'        => __( 'Tools', 'coachpro-ai-teacher-social-branding' ),
+);
+
+$plugin_pages[] = array(
+	'label'       => __( 'Settings', 'coachpro-ai-teacher-social-branding' ),
+	'description' => __( 'Configure global defaults and platform directory setup.', 'coachpro-ai-teacher-social-branding' ),
+	'url'         => admin_url( 'admin.php?page=' . $this->plugin_name . '-settings' ),
+	'type'        => __( 'Configuration', 'coachpro-ai-teacher-social-branding' ),
+);
+
+$page_count = count( $plugin_pages );
 ?>
 
 <div class="cpai-tsb-admin-shell">
@@ -44,6 +78,28 @@ $placeholder_qty = max( 1, $max_cards - $platform_count );
 				<p><?php esc_html_e( 'Total Questions', 'coachpro-ai-teacher-social-branding' ); ?></p>
 				<strong><?php echo esc_html( $question_total ); ?></strong>
 			</article>
+			<article class="cpai-tsb-kpi-card">
+				<p><?php esc_html_e( 'Plugin Pages', 'coachpro-ai-teacher-social-branding' ); ?></p>
+				<strong><?php echo esc_html( $page_count ); ?></strong>
+			</article>
+		</section>
+
+		<section class="cpai-tsb-page-directory" aria-label="<?php esc_attr_e( 'Plugin pages', 'coachpro-ai-teacher-social-branding' ); ?>">
+			<div class="cpai-tsb-section-head">
+				<h2><?php esc_html_e( 'All Branding System Pages', 'coachpro-ai-teacher-social-branding' ); ?></h2>
+				<p><?php esc_html_e( 'Quick access cards for every page available in this plugin.', 'coachpro-ai-teacher-social-branding' ); ?></p>
+			</div>
+
+			<div class="cpai-tsb-page-grid" role="list">
+				<?php foreach ( $plugin_pages as $page_item ) : ?>
+					<a class="cpai-tsb-page-card" role="listitem" href="<?php echo esc_url( $page_item['url'] ); ?>">
+						<span class="cpai-tsb-page-chip"><?php echo esc_html( $page_item['type'] ); ?></span>
+						<h3><?php echo esc_html( $page_item['label'] ); ?></h3>
+						<p><?php echo esc_html( $page_item['description'] ); ?></p>
+						<span class="cpai-tsb-page-link"><?php esc_html_e( 'Open Page →', 'coachpro-ai-teacher-social-branding' ); ?></span>
+					</a>
+				<?php endforeach; ?>
+			</div>
 		</section>
 
 		<div class="cpai-tsb-platform-grid" role="list" aria-label="<?php esc_attr_e( 'Platform cards', 'coachpro-ai-teacher-social-branding' ); ?>">
