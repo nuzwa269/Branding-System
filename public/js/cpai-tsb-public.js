@@ -103,7 +103,10 @@
 				.attr('data-ur', model.question.ur)
 				.text(model.question.en);
 
+ codex/add-image-upload-feature-for-questions-n11qn6
+
 			const questionImage = this.createQuestionImage(model.imageUrl, model.question.en);
+ main
 
 			const comparison = $('<div class="cpai-compare-grid"></div>');
 			comparison.append(this.createComparePanel(model.compare.left, 'left'));
@@ -141,7 +144,13 @@
 		createComparePanel(panel, side) {
 			const panelEl = $(`<div class="cpai-compare-panel ${side}"></div>`);
 			const media = $('<div class="cpai-compare-visual" aria-hidden="true"></div>');
-			media.append(`<i class="${panel.icon}"></i>`);
+			if (panel.imageUrl) {
+				const panelImage = $('<img class="cpai-compare-image" loading="lazy" />');
+				panelImage.attr('src', panel.imageUrl).attr('alt', panel.title.en || 'Comparison image');
+				media.append(panelImage);
+			} else {
+				media.append(`<i class="${panel.icon}"></i>`);
+			}
 			const title = $('<div class="cpai-compare-title"></div>').attr('data-en', panel.title.en).attr('data-ur', panel.title.ur).text(panel.title.en);
 			const label = $('<div class="cpai-compare-label"></div>').attr('data-en', panel.label.en).attr('data-ur', panel.label.ur).text(panel.label.en);
 			panelEl.append(media, title, label);
@@ -178,7 +187,8 @@
 							en: 'Less ideal setup',
 							ur: 'کم موزوں مثال'
 						},
-						icon: 'fas fa-layer-group'
+						icon: 'fas fa-layer-group',
+							imageUrl: question.compare_left_image_url || ''
 					},
 					right: {
 						title: {
@@ -189,7 +199,8 @@
 							en: 'Professional result',
 							ur: 'پیشہ ورانہ نتیجہ'
 						},
-						icon: 'fas fa-award'
+						icon: 'fas fa-award',
+							imageUrl: question.compare_right_image_url || ''
 					}
 				},
 				optimization: {

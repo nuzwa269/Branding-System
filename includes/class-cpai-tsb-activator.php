@@ -269,7 +269,12 @@ class CPAI_TSB_Activator {
 			'id'             => 'q' . absint( $index ),
 			'text_en'        => '',
 			'text_ur'        => '',
+ codex/add-image-upload-feature-for-questions-n11qn6
+			'compare_left_image_url'  => '',
+			'compare_right_image_url' => '',
+
 			'image_url'      => '',
+ main
 			'instruction_en' => array(
 				'title' => '',
 				'steps' => array(),
