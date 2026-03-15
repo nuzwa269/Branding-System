@@ -1,0 +1,104 @@
+{
+    "rows": [
+        {
+            "platform_name": "Facebook",
+            "question_en": "Is your Facebook page profile image a clear professional headshot with consistent branding colors?",
+            "question_ur": "کیا آپ کے فیس بک پیج کی پروفائل تصویر واضح پروفیشنل ہیڈ شاٹ ہے اور برانڈنگ کلرز سے میچ کرتی ہے؟",
+            "suggestion_title_en": "Upgrade your profile image",
+            "suggestion_title_ur": "پروفائل تصویر کو بہتر بنائیں",
+            "suggestion_steps": "Use a high-resolution portrait with good lighting. | Wear classroom-appropriate attire to reflect your teaching identity. | Apply one consistent color tone that matches your page visuals.",
+            "tips": "Avoid logos-only photos. People trust educator brands that show a real face.",
+            "related_tool_placeholder": "<em>Tool idea:</em> Canva profile photo frame + basic color filter."
+        },
+        {
+            "platform_name": "Facebook",
+            "question_en": "Does your cover photo clearly communicate your teaching niche and student outcome?",
+            "question_ur": "کیا کور فوٹو سے آپ کی ٹیچنگ نِچ اور طلبہ کے نتائج واضح طور پر سمجھ آتے ہیں؟",
+            "suggestion_title_en": "Design a message-driven cover",
+            "suggestion_title_ur": "پیغام پر مبنی کور تیار کریں",
+            "suggestion_steps": "Add one short value statement (who you teach + what result). | Include your core subject and class level. | Keep text readable on mobile preview.",
+            "tips": "A clear promise in the cover area improves first impressions in seconds.",
+            "related_tool_placeholder": "<em>Tool idea:</em> Meta cover safe-area template."
+        },
+        {
+            "platform_name": "Facebook",
+            "question_en": "Is your intro/bio written in student-focused language instead of generic teacher statements?",
+            "question_ur": "کیا آپ کا انٹرو/بایو عام جملوں کے بجائے طالب علم کی ضرورت کے مطابق لکھا گیا ہے؟",
+            "suggestion_title_en": "Rewrite your intro for impact",
+            "suggestion_title_ur": "انٹرو کو اثر انگیز بنائیں",
+            "suggestion_steps": "Start with the audience you serve. | Mention one measurable learning result. | End with a friendly call to action such as message for guidance.",
+            "tips": "Use simple language parents and students can understand immediately.",
+            "related_tool_placeholder": "<em>Tool idea:</em> 3-line bio formula worksheet."
+        },
+        {
+            "platform_name": "Facebook",
+            "question_en": "Do you have a fixed weekly content plan (tips, live class snippets, success stories, FAQs)?",
+            "question_ur": "کیا آپ کے پاس ہفتہ وار فکسڈ کنٹینٹ پلان موجود ہے (ٹپس، لائیو کلپس، کامیابی کہانیاں، FAQ)؟",
+            "suggestion_title_en": "Build a weekly content rhythm",
+            "suggestion_title_ur": "ہفتہ وار کنٹینٹ روٹین بنائیں",
+            "suggestion_steps": "Create 4 content pillars and assign one day to each. | Batch-create post ideas every weekend. | Track engagement and repeat top-performing formats.",
+            "tips": "Consistency beats perfection for personal brand growth.",
+            "related_tool_placeholder": "<em>Tool idea:</em> Google Sheet content calendar."
+        },
+        {
+            "platform_name": "Facebook",
+            "question_en": "Are your posts using simple hooks in the first 2 lines to stop scrolling?",
+            "question_ur": "کیا آپ کی پوسٹس کی پہلی دو لائنیں مضبوط ہُک رکھتی ہیں تاکہ لوگ اسکرول روکیں؟",
+            "suggestion_title_en": "Improve your post openings",
+            "suggestion_title_ur": "پوسٹ کی شروعات طاقتور بنائیں",
+            "suggestion_steps": "Open with a student problem question. | Add a bold promise or number-based result. | Keep first line under 8 words where possible.",
+            "tips": "Strong hooks increase reach even without paid ads.",
+            "related_tool_placeholder": "<em>Tool idea:</em> Hook swipe file for educators."
+        },
+        {
+            "platform_name": "Facebook",
+            "question_en": "Do you showcase social proof like student testimonials, grades, or parent feedback regularly?",
+            "question_ur": "کیا آپ باقاعدگی سے سوشل پروف دکھاتے ہیں جیسے ٹیسٹی مونیلز، گریڈز یا والدین کا فیڈبیک؟",
+            "suggestion_title_en": "Strengthen trust with proof",
+            "suggestion_title_ur": "ثبوت کے ذریعے اعتماد بڑھائیں",
+            "suggestion_steps": "Post one proof-based story each week. | Blur sensitive student data before sharing. | Add context: what strategy produced the result.",
+            "tips": "Specific proof converts better than generic praise.",
+            "related_tool_placeholder": "<em>Tool idea:</em> Testimonial highlight template."
+        },
+        {
+            "platform_name": "Facebook",
+            "question_en": "Is your page CTA button aligned with your goal (Message, WhatsApp, Book Now, Learn More)?",
+            "question_ur": "کیا پیج کا CTA بٹن آپ کے اصل مقصد کے مطابق ہے (Message، WhatsApp، Book Now، Learn More)؟",
+            "suggestion_title_en": "Align call-to-action with conversion",
+            "suggestion_title_ur": "CTA کو مقصد کے ساتھ ہم آہنگ کریں",
+            "suggestion_steps": "Set one primary action for new visitors. | Match button text with the offer in your pinned post. | Test CTA response weekly and refine.",
+            "tips": "One clear CTA avoids confusion and improves inquiries.",
+            "related_tool_placeholder": "<em>Tool idea:</em> CTA audit checklist."
+        },
+        {
+            "platform_name": "Facebook",
+            "question_en": "Have you pinned a high-converting post that introduces your teaching offer and contact process?",
+            "question_ur": "کیا آپ نے ایک ہائی کنورٹنگ پن پوسٹ لگائی ہے جس میں آپ کی آفر اور رابطہ طریقہ واضح ہو؟",
+            "suggestion_title_en": "Create a strategic pinned post",
+            "suggestion_title_ur": "اسٹریٹیجک پن پوسٹ تیار کریں",
+            "suggestion_steps": "Explain who the program is for. | Add key benefits in bullet points. | Include exact next step: message keyword or booking link.",
+            "tips": "Pinned posts act as your landing page on Facebook.",
+            "related_tool_placeholder": "<em>Tool idea:</em> Pinned post conversion copy template."
+        },
+        {
+            "platform_name": "Facebook",
+            "question_en": "Do you respond to comments and inbox messages within 24 hours with a professional script?",
+            "question_ur": "کیا آپ 24 گھنٹوں کے اندر کمنٹس اور ان باکس میسجز کا پروفیشنل اسکرپٹ کے ساتھ جواب دیتے ہیں؟",
+            "suggestion_title_en": "Improve response system",
+            "suggestion_title_ur": "رسپانس سسٹم بہتر کریں",
+            "suggestion_steps": "Prepare 3 quick-reply scripts for common questions. | Use polite greetings and name personalization. | End replies with one clear next action.",
+            "tips": "Fast response time increases trust and enrollment chances.",
+            "related_tool_placeholder": "<em>Tool idea:</em> Saved replies in Meta Business Suite."
+        },
+        {
+            "platform_name": "Facebook",
+            "question_en": "Are you reviewing Facebook Insights monthly to improve content, timing, and audience targeting?",
+            "question_ur": "کیا آپ ماہانہ Facebook Insights دیکھ کر کنٹینٹ، ٹائمنگ اور آڈینس ٹارگٹنگ بہتر کرتے ہیں؟",
+            "suggestion_title_en": "Use insights for continuous growth",
+            "suggestion_title_ur": "Insights سے مسلسل گروتھ حاصل کریں",
+            "suggestion_steps": "Track top 5 posts by reach and saves. | Identify best posting time from engagement trends. | Drop low-performing formats and double down on winners.",
+            "tips": "Data-led improvement is the fastest path to a stronger educator brand.",
+            "related_tool_placeholder": "<em>Tool idea:</em> Monthly insights review sheet."
+        }
+    ]
+}
