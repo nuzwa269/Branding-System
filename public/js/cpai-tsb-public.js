@@ -103,6 +103,8 @@
 				.attr('data-ur', model.question.ur)
 				.text(model.question.en);
 
+			const questionImage = this.createQuestionImage(model.imageUrl, model.question.en);
+
 			const comparison = $('<div class="cpai-compare-grid"></div>');
 			comparison.append(this.createComparePanel(model.compare.left, 'left'));
 			comparison.append(this.createComparePanel(model.compare.right, 'right'));
@@ -131,7 +133,7 @@
 
 			const successMsg = $('<div class="cpai-success-msg" data-en="Great! Moving to the next check." data-ur="بہت خوب! اگلے چیک کی طرف بڑھتے ہیں۔"></div>');
 
-			card.append(title, comparison, options, optimizationPanel, successMsg);
+			card.append(title, questionImage, comparison, options, optimizationPanel, successMsg);
 			this.renderOptimizationPanel(card);
 			return card;
 		}
@@ -139,11 +141,29 @@
 		createComparePanel(panel, side) {
 			const panelEl = $(`<div class="cpai-compare-panel ${side}"></div>`);
 			const media = $('<div class="cpai-compare-visual" aria-hidden="true"></div>');
-			media.append(`<i class="${panel.icon}"></i>`);
+			if (panel.imageUrl) {
+				const panelImage = $('<img class="cpai-compare-image" loading="lazy" />');
+				panelImage.attr('src', panel.imageUrl).attr('alt', panel.title.en || 'Comparison image');
+				media.append(panelImage);
+			} else {
+				media.append(`<i class="${panel.icon}"></i>`);
+			}
 			const title = $('<div class="cpai-compare-title"></div>').attr('data-en', panel.title.en).attr('data-ur', panel.title.ur).text(panel.title.en);
 			const label = $('<div class="cpai-compare-label"></div>').attr('data-en', panel.label.en).attr('data-ur', panel.label.ur).text(panel.label.en);
 			panelEl.append(media, title, label);
 			return panelEl;
+		}
+
+		createQuestionImage(imageUrl, fallbackAlt) {
+			if (!imageUrl) {
+				return $();
+			}
+
+			const figure = $('<figure class="cpai-question-image-wrap"></figure>');
+			const img = $('<img class="cpai-question-image" loading="lazy" />');
+			img.attr('src', imageUrl).attr('alt', fallbackAlt || 'Question image');
+			figure.append(img);
+			return figure;
 		}
 
 		normalizeQuestionModel(question, index) {
@@ -153,6 +173,7 @@
 					en: question.text_en || `Optimization question placeholder ${defaultNumber}`,
 					ur: question.text_ur || `اصلاحی سوال کا پلیس ہولڈر ${defaultNumber}`
 				},
+				imageUrl: question.image_url || '',
 				compare: {
 					left: {
 						title: {
@@ -163,7 +184,8 @@
 							en: 'Less ideal setup',
 							ur: 'کم موزوں مثال'
 						},
-						icon: 'fas fa-layer-group'
+						icon: 'fas fa-layer-group',
+							imageUrl: question.compare_left_image_url || ''
 					},
 					right: {
 						title: {
@@ -174,7 +196,8 @@
 							en: 'Professional result',
 							ur: 'پیشہ ورانہ نتیجہ'
 						},
-						icon: 'fas fa-award'
+						icon: 'fas fa-award',
+							imageUrl: question.compare_right_image_url || ''
 					}
 				},
 				optimization: {

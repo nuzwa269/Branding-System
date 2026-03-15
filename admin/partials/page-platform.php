@@ -29,6 +29,21 @@
 				<input type="hidden" name="platform[questions][<?php echo esc_attr( $index ); ?>][id]" value="<?php echo esc_attr( $question['id'] ); ?>" />
 				<p><label><?php esc_html_e( 'Question Text (EN)', 'coachpro-ai-teacher-social-branding' ); ?></label><input type="text" class="widefat" name="platform[questions][<?php echo esc_attr( $index ); ?>][text_en]" value="<?php echo esc_attr( $question['text_en'] ); ?>" /></p>
 				<p><label><?php esc_html_e( 'Question Text (UR)', 'coachpro-ai-teacher-social-branding' ); ?></label><input type="text" class="widefat" dir="rtl" name="platform[questions][<?php echo esc_attr( $index ); ?>][text_ur]" value="<?php echo esc_attr( $question['text_ur'] ); ?>" /></p>
+				<p>
+					<label><?php esc_html_e( 'Question Image URL', 'coachpro-ai-teacher-social-branding' ); ?></label>
+					<input type="url" class="widefat cpai-image-url-input" name="platform[questions][<?php echo esc_attr( $index ); ?>][image_url]" value="<?php echo esc_url( isset( $question['image_url'] ) ? $question['image_url'] : '' ); ?>" placeholder="https://example.com/question-image.jpg" />
+					<button type="button" class="button cpai-upload-image-btn" style="margin-top:8px;"><?php esc_html_e( 'Upload / Select Image', 'coachpro-ai-teacher-social-branding' ); ?></button>
+				</p>
+				<p>
+					<label><?php esc_html_e( 'Compare Image (Needs Improvement)', 'coachpro-ai-teacher-social-branding' ); ?></label>
+					<input type="url" class="widefat cpai-image-url-input" name="platform[questions][<?php echo esc_attr( $index ); ?>][compare_left_image_url]" value="<?php echo esc_url( isset( $question['compare_left_image_url'] ) ? $question['compare_left_image_url'] : '' ); ?>" placeholder="https://example.com/needs-improvement.jpg" />
+					<button type="button" class="button cpai-upload-image-btn" style="margin-top:8px;"><?php esc_html_e( 'Upload / Select Image', 'coachpro-ai-teacher-social-branding' ); ?></button>
+				</p>
+				<p>
+					<label><?php esc_html_e( 'Compare Image (Recommended)', 'coachpro-ai-teacher-social-branding' ); ?></label>
+					<input type="url" class="widefat cpai-image-url-input" name="platform[questions][<?php echo esc_attr( $index ); ?>][compare_right_image_url]" value="<?php echo esc_url( isset( $question['compare_right_image_url'] ) ? $question['compare_right_image_url'] : '' ); ?>" placeholder="https://example.com/recommended.jpg" />
+					<button type="button" class="button cpai-upload-image-btn" style="margin-top:8px;"><?php esc_html_e( 'Upload / Select Image', 'coachpro-ai-teacher-social-branding' ); ?></button>
+				</p>
 				<p><label><?php esc_html_e( 'Negative Title (EN)', 'coachpro-ai-teacher-social-branding' ); ?></label><input type="text" class="widefat" name="platform[questions][<?php echo esc_attr( $index ); ?>][instruction_en][title]" value="<?php echo esc_attr( $question['instruction_en']['title'] ); ?>" /></p>
 				<p><label><?php esc_html_e( 'Negative Steps (EN, one per line)', 'coachpro-ai-teacher-social-branding' ); ?></label><textarea class="widefat" rows="3" name="platform[questions][<?php echo esc_attr( $index ); ?>][instruction_en][steps]"><?php echo esc_textarea( implode( "\n", $question['instruction_en']['steps'] ) ); ?></textarea></p>
 				<p><label><?php esc_html_e( 'Tips (EN, one per line)', 'coachpro-ai-teacher-social-branding' ); ?></label><textarea class="widefat" rows="3" name="platform[questions][<?php echo esc_attr( $index ); ?>][instruction_en][tips]"><?php echo esc_textarea( implode( "\n", $question['instruction_en']['tips'] ) ); ?></textarea></p>
