@@ -269,6 +269,7 @@ class CPAI_TSB_Activator {
 			'id'             => 'q' . absint( $index ),
 			'text_en'        => '',
 			'text_ur'        => '',
+			'image_url'      => '',
 			'instruction_en' => array(
 				'title' => '',
 				'steps' => array(),

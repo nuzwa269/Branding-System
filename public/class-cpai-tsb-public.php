@@ -134,6 +134,7 @@ class CPAI_TSB_Public {
 			'id'             => ! empty( $question['id'] ) ? sanitize_key( $question['id'] ) : 'q' . absint( $position ),
 			'text_en'        => isset( $question['text_en'] ) ? (string) $question['text_en'] : '',
 			'text_ur'        => isset( $question['text_ur'] ) ? (string) $question['text_ur'] : '',
+			'image_url'      => isset( $question['image_url'] ) ? esc_url_raw( $question['image_url'] ) : '',
 			'instruction_en' => $this->normalize_instruction_for_public( $instruction_en ),
 			'instruction_ur' => $this->normalize_instruction_for_public( $instruction_ur ),
 		);
