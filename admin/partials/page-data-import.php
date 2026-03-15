@@ -3,7 +3,7 @@
 	<p><?php esc_html_e( 'Import question data in bulk from CSV or JSON, or export current platform question data.', 'coachpro-ai-teacher-social-branding' ); ?></p>
 
 	<h2><?php esc_html_e( 'Bulk Data Import', 'coachpro-ai-teacher-social-branding' ); ?></h2>
-	<p><?php esc_html_e( 'Required columns: platform_name, question_en, question_ur, suggestion_title_en, suggestion_title_ur, suggestion_steps, tips, related_tool_placeholder', 'coachpro-ai-teacher-social-branding' ); ?></p>
+	<p><?php esc_html_e( 'Required columns: platform_name, question_en, question_ur, suggestion_title_en, suggestion_title_ur, suggestion_steps, tips, related_tool_placeholder. Optional column: question_image_url', 'coachpro-ai-teacher-social-branding' ); ?></p>
 
 	<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 		<input type="hidden" name="action" value="cpai_tsb_save_data" />
