@@ -59,6 +59,38 @@
 	</form>
 
 	<hr />
+	<h2><?php esc_html_e( 'Install Demo Data', 'coachpro-ai-teacher-social-branding' ); ?></h2>
+	<p><?php esc_html_e( 'Quickly install platform-specific demo questions. Demo data is generated for the selected social platform only so content appears in the correct section.', 'coachpro-ai-teacher-social-branding' ); ?></p>
+
+	<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+		<input type="hidden" name="action" value="cpai_tsb_save_data" />
+		<input type="hidden" name="cpai_tsb_action_type" value="install_demo_data" />
+		<?php wp_nonce_field( 'cpai_tsb_save_data', 'cpai_tsb_nonce' ); ?>
+
+		<table class="form-table" role="presentation">
+			<tr>
+				<th scope="row"><?php esc_html_e( 'Target Platform', 'coachpro-ai-teacher-social-branding' ); ?></th>
+				<td>
+					<select name="demo_platform_slug" required>
+						<?php foreach ( $platforms as $platform_slug => $platform ) : ?>
+							<option value="<?php echo esc_attr( $platform_slug ); ?>"><?php echo esc_html( $platform['name_en'] ); ?></option>
+						<?php endforeach; ?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row"><?php esc_html_e( 'Install Mode', 'coachpro-ai-teacher-social-branding' ); ?></th>
+				<td>
+					<label><input type="radio" name="demo_import_mode" value="replace" checked="checked" /> <?php esc_html_e( 'Replace questions for selected platform', 'coachpro-ai-teacher-social-branding' ); ?></label><br />
+					<label><input type="radio" name="demo_import_mode" value="append" /> <?php esc_html_e( 'Append demo questions to selected platform', 'coachpro-ai-teacher-social-branding' ); ?></label>
+				</td>
+			</tr>
+		</table>
+
+		<p class="submit"><button type="submit" class="button button-secondary"><?php esc_html_e( 'Install Demo Data', 'coachpro-ai-teacher-social-branding' ); ?></button></p>
+	</form>
+
+	<hr />
 	<h2><?php esc_html_e( 'Supported Platforms', 'coachpro-ai-teacher-social-branding' ); ?></h2>
 	<ul>
 		<?php foreach ( $platforms as $platform ) : ?>
