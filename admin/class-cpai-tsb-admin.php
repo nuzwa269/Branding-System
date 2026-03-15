@@ -171,6 +171,10 @@ class CPAI_TSB_Admin {
 				$result = $this->handle_import_data();
 				$this->redirect_with_message( $this->plugin_name . '-data-import', $result );
 				break;
+			case 'install_demo_data':
+				$result = $this->handle_install_demo_data();
+				$this->redirect_with_message( $this->plugin_name . '-data-import', $result );
+				break;
 			case 'export_data':
 				$this->handle_export_data();
 				break;
@@ -311,6 +315,161 @@ class CPAI_TSB_Admin {
 		header( 'Content-Disposition: attachment; filename=' . $filename_base . '.json' );
 		echo wp_json_encode( $rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 		exit;
+	}
+
+	private function handle_install_demo_data() {
+		$target_platform = isset( $_POST['demo_platform_slug'] ) ? sanitize_key( wp_unslash( $_POST['demo_platform_slug'] ) ) : '';
+		$mode            = isset( $_POST['demo_import_mode'] ) ? sanitize_key( wp_unslash( $_POST['demo_import_mode'] ) ) : 'replace';
+
+		$platforms = $this->get_platforms();
+
+		if ( empty( $target_platform ) || ! isset( $platforms[ $target_platform ] ) ) {
+			return 'demo_invalid_platform';
+		}
+
+		if ( 'replace' === $mode ) {
+			$platforms[ $target_platform ]['questions'] = array();
+		}
+
+		$demo_rows      = $this->build_demo_rows_for_platform( $platforms[ $target_platform ] );
+		$starting_index = count( $platforms[ $target_platform ]['questions'] );
+
+		foreach ( $demo_rows as $offset => $row ) {
+			$platforms[ $target_platform ]['questions'][] = $this->normalize_question_payload(
+				array(
+					'id'      => 'q' . ( $starting_index + $offset + 1 ),
+					'text_en' => $row['question_en'],
+					'text_ur' => $row['question_ur'],
+					'instruction_en' => array(
+						'title' => $row['suggestion_title_en'],
+						'steps' => $row['suggestion_steps'],
+						'tips'  => $row['tips'],
+						'tool'  => $row['related_tool_placeholder'],
+					),
+					'instruction_ur' => array(
+						'title' => $row['suggestion_title_ur'],
+						'steps' => $row['suggestion_steps_ur'],
+						'tips'  => $row['tips_ur'],
+						'tool'  => $row['related_tool_placeholder_ur'],
+					),
+				),
+				$starting_index + $offset + 1
+			);
+		}
+
+		$platforms[ $target_platform ] = $this->normalize_platform_payload( $platforms[ $target_platform ], $target_platform );
+
+		update_option( 'cpai_tsb_platforms', $platforms );
+
+		return 'demo_data_installed';
+	}
+
+	private function build_demo_rows_for_platform( $platform ) {
+		$platform_name_en = ! empty( $platform['name_en'] ) ? sanitize_text_field( $platform['name_en'] ) : __( 'Platform', 'coachpro-ai-teacher-social-branding' );
+		$platform_name_ur = ! empty( $platform['name_ur'] ) ? sanitize_text_field( $platform['name_ur'] ) : $platform_name_en;
+
+		return array(
+			array(
+				'question_en'                   => sprintf( 'Does your %s profile photo look clear, professional, and consistent with your teaching brand?', $platform_name_en ),
+				'question_ur'                   => sprintf( 'کیا %s کی پروفائل تصویر واضح، پروفیشنل اور آپ کی تدریسی برانڈنگ سے ہم آہنگ ہے؟', $platform_name_ur ),
+				'suggestion_title_en'           => 'Refresh your profile identity',
+				'suggestion_title_ur'           => 'پروفائل شناخت کو بہتر بنائیں',
+				'suggestion_steps'              => array(
+					'Use a clean headshot with good lighting and neutral background.',
+					'Keep the same visual style across profile, banner, and posts.',
+					'Avoid clutter and keep the main face area clearly visible.',
+				),
+				'suggestion_steps_ur'           => array(
+					'صاف پس منظر اور اچھی روشنی کے ساتھ واضح تصویر استعمال کریں۔',
+					'پروفائل، بینر اور پوسٹس میں یکساں برانڈ اسٹائل رکھیں۔',
+					'غیر ضروری عناصر ہٹا کر چہرہ نمایاں رکھیں۔',
+				),
+				'tips'                          => array( 'Educator accounts gain more trust when the profile identity is consistent and personal.' ),
+				'tips_ur'                       => array( 'استاد کے اکاؤنٹس میں مسلسل اور ذاتی پروفائل شناخت اعتماد بڑھاتی ہے۔' ),
+				'related_tool_placeholder'      => '<em>Tool idea:</em> Canva profile photo template.',
+				'related_tool_placeholder_ur'   => '<em>ٹول آئیڈیا:</em> Canva پروفائل فوٹو ٹیمپلیٹ۔',
+			),
+			array(
+				'question_en'                   => sprintf( 'Is your %s bio written around student outcomes instead of generic teacher wording?', $platform_name_en ),
+				'question_ur'                   => sprintf( 'کیا %s کا بایو عام جملوں کے بجائے طالب علم کے نتائج پر مبنی ہے؟', $platform_name_ur ),
+				'suggestion_title_en'           => 'Rewrite your bio for conversion',
+				'suggestion_title_ur'           => 'بایو کو نتیجہ خیز بنائیں',
+				'suggestion_steps'              => array(
+					'Start with who you teach and what result they can expect.',
+					'Add one proof point (years, grades improved, or success stories).',
+					'End with one clear next step like message or booking link.',
+				),
+				'suggestion_steps_ur'           => array(
+					'واضح کریں کہ آپ کن طلبہ کو پڑھاتے ہیں اور کیا نتیجہ دیتے ہیں۔',
+					'ایک مضبوط ثبوت شامل کریں (تجربہ، نتائج یا کامیابی کہانی)۔',
+					'آخر میں رابطے کا واضح اگلا قدم دیں۔',
+				),
+				'tips'                          => array( 'Outcome-based bios attract serious students faster than generic introductions.' ),
+				'tips_ur'                       => array( 'نتیجہ پر مبنی بایو عام تعارف سے زیادہ سنجیدہ طلبہ کو متوجہ کرتا ہے۔' ),
+				'related_tool_placeholder'      => '<em>Tool idea:</em> Bio rewrite prompt template.',
+				'related_tool_placeholder_ur'   => '<em>ٹول آئیڈیا:</em> بایو ری رائٹ پرامپٹ ٹیمپلیٹ۔',
+			),
+			array(
+				'question_en'                   => sprintf( 'Are your %s posts using clear hooks and a strong call-to-action?', $platform_name_en ),
+				'question_ur'                   => sprintf( 'کیا %s کی پوسٹس میں واضح ہُک اور مضبوط کال ٹو ایکشن شامل ہے؟', $platform_name_ur ),
+				'suggestion_title_en'           => 'Improve content structure',
+				'suggestion_title_ur'           => 'کنٹینٹ اسٹرکچر بہتر کریں',
+				'suggestion_steps'              => array(
+					'Open with a pain-point question in the first line.',
+					'Share one practical mini-tip with simple language.',
+					'Close with one CTA: comment, message, or click.',
+				),
+				'suggestion_steps_ur'           => array(
+					'پہلی لائن میں مسئلہ پر مبنی سوال لکھیں۔',
+					'سادہ زبان میں ایک عملی ٹِپ دیں۔',
+					'آخر میں ایک واضح CTA دیں: کمنٹ، میسج یا کلک۔',
+				),
+				'tips'                          => array( 'A predictable content format improves audience retention and response rate.' ),
+				'tips_ur'                       => array( 'مسلسل کنٹینٹ فارمیٹ سے آڈینس ریٹینشن اور رسپانس بہتر ہوتا ہے۔' ),
+				'related_tool_placeholder'      => '<em>Tool idea:</em> Weekly content planner.',
+				'related_tool_placeholder_ur'   => '<em>ٹول آئیڈیا:</em> ویکلی کنٹینٹ پلینر۔',
+			),
+			array(
+				'question_en'                   => sprintf( 'Do you publish social proof on %s (student results, testimonials, or feedback) every week?', $platform_name_en ),
+				'question_ur'                   => sprintf( 'کیا آپ %s پر ہر ہفتے سوشل پروف (نتائج، ٹیسٹی مونیلز، یا فیڈبیک) شیئر کرتے ہیں؟', $platform_name_ur ),
+				'suggestion_title_en'           => 'Systemize your social proof',
+				'suggestion_title_ur'           => 'سوشل پروف کو منظم کریں',
+				'suggestion_steps'              => array(
+					'Collect permission-based student feedback screenshots.',
+					'Turn one result into a short story post with context.',
+					'Create a weekly slot for trust-building proof content.',
+				),
+				'suggestion_steps_ur'           => array(
+					'طلبہ کے فیڈبیک اسکرین شاٹس اجازت کے ساتھ جمع کریں۔',
+					'نتیجے کو مختصر کہانی پوسٹ میں تبدیل کریں۔',
+					'اعتماد بڑھانے والے مواد کے لیے ہفتہ وار شیڈول بنائیں۔',
+				),
+				'tips'                          => array( 'Consistent proof-based content raises credibility and inquiries.' ),
+				'tips_ur'                       => array( 'مسلسل ثبوت پر مبنی مواد سے ساکھ اور انکوائریز میں اضافہ ہوتا ہے۔' ),
+				'related_tool_placeholder'      => '<em>Tool idea:</em> Testimonial carousel template.',
+				'related_tool_placeholder_ur'   => '<em>ٹول آئیڈیا:</em> ٹیسٹی مونیل کیروسل ٹیمپلیٹ۔',
+			),
+			array(
+				'question_en'                   => sprintf( 'Are you reviewing your %s analytics monthly to improve content performance?', $platform_name_en ),
+				'question_ur'                   => sprintf( 'کیا آپ %s کی اینالیٹکس ماہانہ چیک کر کے کنٹینٹ پرفارمنس بہتر کرتے ہیں؟', $platform_name_ur ),
+				'suggestion_title_en'           => 'Track and optimize with data',
+				'suggestion_title_ur'           => 'ڈیٹا سے بہتری لائیں',
+				'suggestion_steps'              => array(
+					'Review top-performing posts by reach and engagement.',
+					'Identify the best posting times and repeat winning formats.',
+					'Remove low-performing content types from next month plan.',
+				),
+				'suggestion_steps_ur'           => array(
+					'ریچ اور انگیجمنٹ کے مطابق بہترین پوسٹس کا جائزہ لیں۔',
+					'بہترین پوسٹنگ اوقات اور کامیاب فارمیٹس دہرائیں۔',
+					'کمزور مواد کو اگلے مہینے کے پلان سے نکال دیں۔',
+				),
+				'tips'                          => array( 'Small monthly optimization loops create compounding growth over time.' ),
+				'tips_ur'                       => array( 'ماہانہ چھوٹی بہتریاں وقت کے ساتھ بڑا اور مستقل گروتھ دیتی ہیں۔' ),
+				'related_tool_placeholder'      => '<em>Tool idea:</em> Monthly analytics review sheet.',
+				'related_tool_placeholder_ur'   => '<em>ٹول آئیڈیا:</em> ماہانہ اینالیٹکس ریویو شیٹ۔',
+			),
+		);
 	}
 
 	private function normalize_import_row( $row ) {
