@@ -30,30 +30,6 @@ class CPAI_TSB_Admin {
 		// Reserved for admin scripts.
 	}
 
-
-
-	public function redirect_default_dashboard() {
-		if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
-		if ( wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
-			return;
-		}
-
-		if ( is_network_admin() || is_user_admin() ) {
-			return;
-		}
-
-		global $pagenow;
-		if ( 'index.php' !== $pagenow ) {
-			return;
-		}
-
-		wp_safe_redirect( admin_url( 'admin.php?page=' . $this->plugin_name ) );
-		exit;
-	}
-
 	public function add_plugin_admin_menu() {
 		$capability = 'manage_options';
 		$platforms  = $this->get_platforms();
