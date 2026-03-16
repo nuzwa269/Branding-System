@@ -145,6 +145,15 @@ class CPAI_TSB_Public {
 		);
 	}
 
+
+	private function sanitize_url_value( $value ) {
+		if ( ! is_scalar( $value ) ) {
+			return '';
+		}
+
+		return esc_url_raw( (string) $value );
+	}
+
 	private function normalize_instruction_for_public( $instruction ) {
 		$instruction = is_array( $instruction ) ? $instruction : array();
 

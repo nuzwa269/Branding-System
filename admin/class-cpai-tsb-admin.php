@@ -909,6 +909,15 @@ codex/add-image-upload-feature-for-questions-n11qn6
 		);
 	}
 
+
+	private function sanitize_url_value( $value ) {
+		if ( ! is_scalar( $value ) ) {
+			return '';
+		}
+
+		return esc_url_raw( (string) $value );
+	}
+
 	private function migrate_legacy_platforms( $legacy_platforms ) {
 		$migrated = array();
 
