@@ -134,8 +134,12 @@ class CPAI_TSB_Public {
 			'id'             => ! empty( $question['id'] ) ? sanitize_key( $question['id'] ) : 'q' . absint( $position ),
 			'text_en'        => isset( $question['text_en'] ) ? (string) $question['text_en'] : '',
 			'text_ur'        => isset( $question['text_ur'] ) ? (string) $question['text_ur'] : '',
-			'compare_left_image_url'  => $this->sanitize_url_value( isset( $question['compare_left_image_url'] ) ? $question['compare_left_image_url'] : '' ),
-			'compare_right_image_url' => $this->sanitize_url_value( isset( $question['compare_right_image_url'] ) ? $question['compare_right_image_url'] : '' ),
+ codex/add-image-upload-feature-for-questions-n11qn6
+			'compare_left_image_url'  => isset( $question['compare_left_image_url'] ) ? esc_url_raw( $question['compare_left_image_url'] ) : '',
+			'compare_right_image_url' => isset( $question['compare_right_image_url'] ) ? esc_url_raw( $question['compare_right_image_url'] ) : '',
+
+			'image_url'      => isset( $question['image_url'] ) ? esc_url_raw( $question['image_url'] ) : '',
+ main
 			'instruction_en' => $this->normalize_instruction_for_public( $instruction_en ),
 			'instruction_ur' => $this->normalize_instruction_for_public( $instruction_ur ),
 		);
