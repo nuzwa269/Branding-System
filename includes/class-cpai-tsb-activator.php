@@ -269,6 +269,8 @@ class CPAI_TSB_Activator {
 			'id'             => 'q' . absint( $index ),
 			'text_en'        => '',
 			'text_ur'        => '',
+			'compare_left_image_url'  => '',
+			'compare_right_image_url' => '',
 			'instruction_en' => array(
 				'title' => '',
 				'steps' => array(),

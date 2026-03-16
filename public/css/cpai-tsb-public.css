@@ -211,6 +211,13 @@
     color: #64748b;
 }
 
+.cpai-compare-image {
+    width: 100%;
+    height: 92px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
 .cpai-compare-panel.right .cpai-compare-visual i {
     color: var(--cpai-platform-accent);
 }
