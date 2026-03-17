@@ -251,11 +251,8 @@ class CPAI_TSB_Admin {
 					'id'      => 'q' . ( count( $platforms[ $platform_slug ]['questions'] ) + 1 ),
 					'text_en' => $normalized['question_en'],
 					'text_ur' => $normalized['question_ur'],
-codex/add-image-upload-feature-for-questions-n11qn6
 					'compare_left_image_url' => $normalized['compare_left_image_url'],
 					'compare_right_image_url' => $normalized['compare_right_image_url'],
-					'image_url' => $normalized['question_image_url'],
- main
 					'instruction_en' => array(
 						'title' => $normalized['suggestion_title_en'],
 						'steps' => $normalized['suggestion_steps'],
@@ -299,12 +296,8 @@ codex/add-image-upload-feature-for-questions-n11qn6
 					'platform_name'             => $platform['name_en'],
 					'question_en'               => $question['text_en'],
 					'question_ur'               => $question['text_ur'],
- codex/add-image-upload-feature-for-questions-n11qn6
 					'compare_left_image_url'    => isset( $question['compare_left_image_url'] ) ? $question['compare_left_image_url'] : '',
 					'compare_right_image_url'   => isset( $question['compare_right_image_url'] ) ? $question['compare_right_image_url'] : '',
-
-					'question_image_url'        => isset( $question['image_url'] ) ? $question['image_url'] : '',
-  main
 					'suggestion_title_en'       => $question['instruction_en']['title'],
 					'suggestion_title_ur'       => $question['instruction_ur']['title'],
 					'suggestion_steps'          => implode( ' | ', $question['instruction_en']['steps'] ),
@@ -321,11 +314,7 @@ codex/add-image-upload-feature-for-questions-n11qn6
 			header( 'Content-Disposition: attachment; filename=' . $filename_base . '.csv' );
 
 			$output = fopen( 'php://output', 'w' );
- codex/add-image-upload-feature-for-questions-n11qn6
 			fputcsv( $output, array( 'platform_name', 'question_en', 'question_ur', 'compare_left_image_url', 'compare_right_image_url', 'suggestion_title_en', 'suggestion_title_ur', 'suggestion_steps', 'tips', 'related_tool_placeholder' ) );
-
-			fputcsv( $output, array( 'platform_name', 'question_en', 'question_ur', 'question_image_url', 'suggestion_title_en', 'suggestion_title_ur', 'suggestion_steps', 'tips', 'related_tool_placeholder' ) );
-  main
 			foreach ( $rows as $row ) {
 				fputcsv( $output, $row );
 			}
@@ -501,12 +490,8 @@ codex/add-image-upload-feature-for-questions-n11qn6
 			'platform_name'             => isset( $row['platform_name'] ) ? sanitize_text_field( $row['platform_name'] ) : '',
 			'question_en'               => isset( $row['question_en'] ) ? sanitize_text_field( $row['question_en'] ) : '',
 			'question_ur'               => isset( $row['question_ur'] ) ? sanitize_text_field( $row['question_ur'] ) : '',
- codex/add-image-upload-feature-for-questions-n11qn6
 			'compare_left_image_url'    => isset( $row['compare_left_image_url'] ) ? esc_url_raw( $row['compare_left_image_url'] ) : '',
 			'compare_right_image_url'   => isset( $row['compare_right_image_url'] ) ? esc_url_raw( $row['compare_right_image_url'] ) : '',
-
-			'question_image_url'        => isset( $row['question_image_url'] ) ? esc_url_raw( $row['question_image_url'] ) : '',
- main
 			'suggestion_title_en'       => isset( $row['suggestion_title_en'] ) ? sanitize_text_field( $row['suggestion_title_en'] ) : '',
 			'suggestion_title_ur'       => isset( $row['suggestion_title_ur'] ) ? sanitize_text_field( $row['suggestion_title_ur'] ) : '',
 			'suggestion_steps'          => $this->sanitize_lines( isset( $row['suggestion_steps'] ) ? $row['suggestion_steps'] : '' ),
@@ -825,12 +810,8 @@ codex/add-image-upload-feature-for-questions-n11qn6
 			'id'             => 'q' . absint( $position ),
 			'text_en'        => '',
 			'text_ur'        => '',
- codex/add-image-upload-feature-for-questions-n11qn6
 			'compare_left_image_url'  => '',
 			'compare_right_image_url' => '',
-
-			'image_url'      => '',
- main
 			'instruction_en' => array(
 				'title' => '',
 				'steps' => array(),
@@ -887,12 +868,8 @@ codex/add-image-upload-feature-for-questions-n11qn6
 			'id'             => ! empty( $sanitized_id ) ? $sanitized_id : $default_id,
 			'text_en'        => isset( $question['text_en'] ) ? sanitize_text_field( $question['text_en'] ) : '',
 			'text_ur'        => isset( $question['text_ur'] ) ? sanitize_text_field( $question['text_ur'] ) : '',
- codex/add-image-upload-feature-for-questions-n11qn6
 			'compare_left_image_url'  => isset( $question['compare_left_image_url'] ) ? esc_url_raw( $question['compare_left_image_url'] ) : '',
 			'compare_right_image_url' => isset( $question['compare_right_image_url'] ) ? esc_url_raw( $question['compare_right_image_url'] ) : '',
-
-			'image_url'      => isset( $question['image_url'] ) ? esc_url_raw( $question['image_url'] ) : '',
- main
 			'instruction_en' => $this->normalize_instruction_payload( $instruction_en ),
 			'instruction_ur' => $this->normalize_instruction_payload( $instruction_ur ),
 		);
