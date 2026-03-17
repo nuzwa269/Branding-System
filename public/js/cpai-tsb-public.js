@@ -98,6 +98,11 @@
 			const card = $(`<article class="cpai-question-card" id="q-card-${platformId}-${questionId}" data-id="${questionId}"></article>`);
 			card.data('model', model);
 
+			const compareImages = this.createCompareImages(model.compare);
+			if (compareImages) {
+				card.append(compareImages);
+			}
+
 			const title = $('<h4 class="cpai-question-text"></h4>')
 				.attr('data-en', model.question.en)
 				.attr('data-ur', model.question.ur)
@@ -135,6 +140,30 @@
 			card.append(title, comparison, options, optimizationPanel, successMsg);
 			this.renderOptimizationPanel(card);
 			return card;
+		}
+
+		createCompareImages(compare) {
+			const leftUrl = compare.left.imageUrl;
+			const rightUrl = compare.right.imageUrl;
+			if (!leftUrl && !rightUrl) {
+				return null;
+			}
+			const wrap = $('<div class="cpai-compare-images"></div>');
+			if (leftUrl) {
+				const leftWrap = $('<div class="cpai-compare-img-wrap cpai-needs-improvement"></div>');
+				const leftImg = $('<img loading="lazy" />').attr('src', leftUrl).attr('alt', compare.left.title.en || 'Needs Improvement');
+				const leftBadge = $('<span class="cpai-img-badge cpai-badge-bad" aria-label="Needs Improvement">🔒</span>');
+				leftWrap.append(leftImg, leftBadge);
+				wrap.append(leftWrap);
+			}
+			if (rightUrl) {
+				const rightWrap = $('<div class="cpai-compare-img-wrap cpai-recommended"></div>');
+				const rightImg = $('<img loading="lazy" />').attr('src', rightUrl).attr('alt', compare.right.title.en || 'Recommended');
+				const rightBadge = $('<span class="cpai-img-badge cpai-badge-good" aria-label="Recommended">🔒</span>');
+				rightWrap.append(rightImg, rightBadge);
+				wrap.append(rightWrap);
+			}
+			return wrap;
 		}
 
 		createComparePanel(panel, side) {

@@ -379,6 +379,59 @@
     font-weight: 600;
 }
 
+.cpai-compare-images {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.cpai-compare-img-wrap {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    max-width: 220px;
+}
+
+.cpai-compare-img-wrap img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+.cpai-compare-img-wrap.cpai-needs-improvement img {
+    border: 2px solid #e74c3c;
+}
+
+.cpai-compare-img-wrap.cpai-recommended img {
+    border: 2px solid #27ae60;
+}
+
+.cpai-img-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #fff;
+}
+
+.cpai-badge-bad {
+    background: #e74c3c;
+}
+
+.cpai-badge-good {
+    background: #27ae60;
+}
+
 .cpai-focus-pulse {
     animation: cpaiPulse 1.1s ease;
 }
