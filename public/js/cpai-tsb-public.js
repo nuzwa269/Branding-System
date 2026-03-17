@@ -103,10 +103,6 @@
 				.attr('data-ur', model.question.ur)
 				.text(model.question.en);
 
- codex/add-image-upload-feature-for-questions-n11qn6
-
-			const questionImage = this.createQuestionImage(model.imageUrl, model.question.en);
- main
 
 			const comparison = $('<div class="cpai-compare-grid"></div>');
 			comparison.append(this.createComparePanel(model.compare.left, 'left'));
@@ -136,7 +132,7 @@
 
 			const successMsg = $('<div class="cpai-success-msg" data-en="Great! Moving to the next check." data-ur="بہت خوب! اگلے چیک کی طرف بڑھتے ہیں۔"></div>');
 
-			card.append(title, questionImage, comparison, options, optimizationPanel, successMsg);
+			card.append(title, comparison, options, optimizationPanel, successMsg);
 			this.renderOptimizationPanel(card);
 			return card;
 		}
@@ -157,17 +153,6 @@
 			return panelEl;
 		}
 
-		createQuestionImage(imageUrl, fallbackAlt) {
-			if (!imageUrl) {
-				return $();
-			}
-
-			const figure = $('<figure class="cpai-question-image-wrap"></figure>');
-			const img = $('<img class="cpai-question-image" loading="lazy" />');
-			img.attr('src', imageUrl).attr('alt', fallbackAlt || 'Question image');
-			figure.append(img);
-			return figure;
-		}
 
 		normalizeQuestionModel(question, index) {
 			const defaultNumber = index + 1;
@@ -176,7 +161,6 @@
 					en: question.text_en || `Optimization question placeholder ${defaultNumber}`,
 					ur: question.text_ur || `اصلاحی سوال کا پلیس ہولڈر ${defaultNumber}`
 				},
-				imageUrl: question.image_url || '',
 				compare: {
 					left: {
 						title: {
