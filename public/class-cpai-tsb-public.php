@@ -374,7 +374,7 @@ class CPAI_TSB_Public {
 
 	public function render_shortcode( $atts ) {
 		ob_start();
-		include 'partials/public-display.php';
+		include plugin_dir_path( __FILE__ ) . 'partials/public-display.php';
 		return ob_get_clean();
 	}
 }

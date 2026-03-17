@@ -85,9 +85,11 @@ class CPAI_TSB_Activator {
 	private static function default_facebook_questions() {
 		return array(
 			array(
-				'id'      => 'q1',
-				'text_en' => 'Is your Facebook page profile image a clear professional headshot with consistent branding colors?',
-				'text_ur' => 'کیا آپ کے فیس بک پیج کی پروفائل تصویر واضح پروفیشنل ہیڈ شاٹ ہے اور برانڈنگ کلرز سے میچ کرتی ہے؟',
+				'id'                     => 'q1',
+				'text_en'                => 'Is your Facebook page profile image a clear professional headshot with consistent branding colors?',
+				'text_ur'                => 'کیا آپ کے فیس بک پیج کی پروفائل تصویر واضح پروفیشنل ہیڈ شاٹ ہے اور برانڈنگ کلرز سے میچ کرتی ہے؟',
+				'compare_left_image_url'  => '',
+				'compare_right_image_url' => '',
 				'instruction_en' => array(
 					'title' => 'Upgrade your profile image',
 					'steps' => array( 'Use a high-resolution portrait with good lighting.', 'Wear classroom-appropriate attire to reflect your teaching identity.', 'Apply one consistent color tone that matches your page visuals.' ),
@@ -102,9 +104,11 @@ class CPAI_TSB_Activator {
 				),
 			),
 			array(
-				'id'      => 'q2',
-				'text_en' => 'Does your cover photo clearly communicate your teaching niche and student outcome?',
-				'text_ur' => 'کیا کور فوٹو سے آپ کی ٹیچنگ نِچ اور طلبہ کے نتائج واضح طور پر سمجھ آتے ہیں؟',
+				'id'                     => 'q2',
+				'text_en'                => 'Does your cover photo clearly communicate your teaching niche and student outcome?',
+				'text_ur'                => 'کیا کور فوٹو سے آپ کی ٹیچنگ نِچ اور طلبہ کے نتائج واضح طور پر سمجھ آتے ہیں؟',
+				'compare_left_image_url'  => '',
+				'compare_right_image_url' => '',
 				'instruction_en' => array(
 					'title' => 'Design a message-driven cover',
 					'steps' => array( 'Add one short value statement (who you teach + what result).', 'Include your core subject and class level.', 'Keep text readable on mobile preview.' ),
@@ -119,9 +123,11 @@ class CPAI_TSB_Activator {
 				),
 			),
 			array(
-				'id'      => 'q3',
-				'text_en' => 'Is your intro/bio written in student-focused language instead of generic teacher statements?',
-				'text_ur' => 'کیا آپ کا انٹرو/بایو عام جملوں کے بجائے طالب علم کی ضرورت کے مطابق لکھا گیا ہے؟',
+				'id'                     => 'q3',
+				'text_en'                => 'Is your intro/bio written in student-focused language instead of generic teacher statements?',
+				'text_ur'                => 'کیا آپ کا انٹرو/بایو عام جملوں کے بجائے طالب علم کی ضرورت کے مطابق لکھا گیا ہے؟',
+				'compare_left_image_url'  => '',
+				'compare_right_image_url' => '',
 				'instruction_en' => array(
 					'title' => 'Rewrite your intro for impact',
 					'steps' => array( 'Start with the audience you serve.', 'Mention one measurable learning result.', 'End with a friendly call to action such as message for guidance.' ),
@@ -136,9 +142,11 @@ class CPAI_TSB_Activator {
 				),
 			),
 			array(
-				'id'      => 'q4',
-				'text_en' => 'Do you have a fixed weekly content plan (tips, live class snippets, success stories, FAQs)?',
-				'text_ur' => 'کیا آپ کے پاس ہفتہ وار فکسڈ کنٹینٹ پلان موجود ہے (ٹپس، لائیو کلپس، کامیابی کہانیاں، FAQ)؟',
+				'id'                     => 'q4',
+				'text_en'                => 'Do you have a fixed weekly content plan (tips, live class snippets, success stories, FAQs)?',
+				'text_ur'                => 'کیا آپ کے پاس ہفتہ وار فکسڈ کنٹینٹ پلان موجود ہے (ٹپس، لائیو کلپس، کامیابی کہانیاں، FAQ)؟',
+				'compare_left_image_url'  => '',
+				'compare_right_image_url' => '',
 				'instruction_en' => array(
 					'title' => 'Build a weekly content rhythm',
 					'steps' => array( 'Create 4 content pillars and assign one day to each.', 'Batch-create post ideas every weekend.', 'Track engagement and repeat top-performing formats.' ),
@@ -153,9 +161,11 @@ class CPAI_TSB_Activator {
 				),
 			),
 			array(
-				'id'      => 'q5',
-				'text_en' => 'Are your posts using simple hooks in the first 2 lines to stop scrolling?',
-				'text_ur' => 'کیا آپ کی پوسٹس کی پہلی دو لائنیں مضبوط ہُک رکھتی ہیں تاکہ لوگ اسکرول روکیں؟',
+				'id'                     => 'q5',
+				'text_en'                => 'Are your posts using simple hooks in the first 2 lines to stop scrolling?',
+				'text_ur'                => 'کیا آپ کی پوسٹس کی پہلی دو لائنیں مضبوط ہُک رکھتی ہیں تاکہ لوگ اسکرول روکیں؟',
+				'compare_left_image_url'  => '',
+				'compare_right_image_url' => '',
 				'instruction_en' => array(
 					'title' => 'Improve your post openings',
 					'steps' => array( 'Open with a student problem question.', 'Add a bold promise or number-based result.', 'Keep first line under 8 words where possible.' ),
@@ -170,9 +180,11 @@ class CPAI_TSB_Activator {
 				),
 			),
 			array(
-				'id'      => 'q6',
-				'text_en' => 'Do you showcase social proof like student testimonials, grades, or parent feedback regularly?',
-				'text_ur' => 'کیا آپ باقاعدگی سے سوشل پروف دکھاتے ہیں جیسے ٹیسٹی مونیلز، گریڈز یا والدین کا فیڈبیک؟',
+				'id'                     => 'q6',
+				'text_en'                => 'Do you showcase social proof like student testimonials, grades, or parent feedback regularly?',
+				'text_ur'                => 'کیا آپ باقاعدگی سے سوشل پروف دکھاتے ہیں جیسے ٹیسٹی مونیلز، گریڈز یا والدین کا فیڈبیک؟',
+				'compare_left_image_url'  => '',
+				'compare_right_image_url' => '',
 				'instruction_en' => array(
 					'title' => 'Strengthen trust with proof',
 					'steps' => array( 'Post one proof-based story each week.', 'Blur sensitive student data before sharing.', 'Add context: what strategy produced the result.' ),
@@ -187,9 +199,11 @@ class CPAI_TSB_Activator {
 				),
 			),
 			array(
-				'id'      => 'q7',
-				'text_en' => 'Is your page CTA button aligned with your goal (Message, WhatsApp, Book Now, Learn More)?',
-				'text_ur' => 'کیا پیج کا CTA بٹن آپ کے اصل مقصد کے مطابق ہے (Message، WhatsApp، Book Now، Learn More)؟',
+				'id'                     => 'q7',
+				'text_en'                => 'Is your page CTA button aligned with your goal (Message, WhatsApp, Book Now, Learn More)?',
+				'text_ur'                => 'کیا پیج کا CTA بٹن آپ کے اصل مقصد کے مطابق ہے (Message، WhatsApp، Book Now، Learn More)؟',
+				'compare_left_image_url'  => '',
+				'compare_right_image_url' => '',
 				'instruction_en' => array(
 					'title' => 'Align call-to-action with conversion',
 					'steps' => array( 'Set one primary action for new visitors.', 'Match button text with the offer in your pinned post.', 'Test CTA response weekly and refine.' ),
@@ -204,9 +218,11 @@ class CPAI_TSB_Activator {
 				),
 			),
 			array(
-				'id'      => 'q8',
-				'text_en' => 'Have you pinned a high-converting post that introduces your teaching offer and contact process?',
-				'text_ur' => 'کیا آپ نے ایک ہائی کنورٹنگ پن پوسٹ لگائی ہے جس میں آپ کی آفر اور رابطہ طریقہ واضح ہو؟',
+				'id'                     => 'q8',
+				'text_en'                => 'Have you pinned a high-converting post that introduces your teaching offer and contact process?',
+				'text_ur'                => 'کیا آپ نے ایک ہائی کنورٹنگ پن پوسٹ لگائی ہے جس میں آپ کی آفر اور رابطہ طریقہ واضح ہو؟',
+				'compare_left_image_url'  => '',
+				'compare_right_image_url' => '',
 				'instruction_en' => array(
 					'title' => 'Create a strategic pinned post',
 					'steps' => array( 'Explain who the program is for.', 'Add key benefits in bullet points.', 'Include exact next step: message keyword or booking link.' ),
@@ -221,9 +237,11 @@ class CPAI_TSB_Activator {
 				),
 			),
 			array(
-				'id'      => 'q9',
-				'text_en' => 'Do you respond to comments and inbox messages within 24 hours with a professional script?',
-				'text_ur' => 'کیا آپ 24 گھنٹوں کے اندر کمنٹس اور ان باکس میسجز کا پروفیشنل اسکرپٹ کے ساتھ جواب دیتے ہیں؟',
+				'id'                     => 'q9',
+				'text_en'                => 'Do you respond to comments and inbox messages within 24 hours with a professional script?',
+				'text_ur'                => 'کیا آپ 24 گھنٹوں کے اندر کمنٹس اور ان باکس میسجز کا پروفیشنل اسکرپٹ کے ساتھ جواب دیتے ہیں؟',
+				'compare_left_image_url'  => '',
+				'compare_right_image_url' => '',
 				'instruction_en' => array(
 					'title' => 'Improve response system',
 					'steps' => array( 'Prepare 3 quick-reply scripts for common questions.', 'Use polite greetings and name personalization.', 'End replies with one clear next action.' ),
@@ -238,9 +256,11 @@ class CPAI_TSB_Activator {
 				),
 			),
 			array(
-				'id'      => 'q10',
-				'text_en' => 'Are you reviewing Facebook Insights monthly to improve content, timing, and audience targeting?',
-				'text_ur' => 'کیا آپ ماہانہ Facebook Insights دیکھ کر کنٹینٹ، ٹائمنگ اور آڈینس ٹارگٹنگ بہتر کرتے ہیں؟',
+				'id'                     => 'q10',
+				'text_en'                => 'Are you reviewing Facebook Insights monthly to improve content, timing, and audience targeting?',
+				'text_ur'                => 'کیا آپ ماہانہ Facebook Insights دیکھ کر کنٹینٹ، ٹائمنگ اور آڈینس ٹارگٹنگ بہتر کرتے ہیں؟',
+				'compare_left_image_url'  => '',
+				'compare_right_image_url' => '',
 				'instruction_en' => array(
 					'title' => 'Use insights for continuous growth',
 					'steps' => array( 'Track top 5 posts by reach and saves.', 'Identify best posting time from engagement trends.', 'Drop low-performing formats and double down on winners.' ),
