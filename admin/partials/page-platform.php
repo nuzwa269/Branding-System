@@ -29,16 +29,36 @@
 				<input type="hidden" name="platform[questions][<?php echo esc_attr( $index ); ?>][id]" value="<?php echo esc_attr( $question['id'] ); ?>" />
 				<p><label><?php esc_html_e( 'Question Text (EN)', 'coachpro-ai-teacher-social-branding' ); ?></label><input type="text" class="widefat" name="platform[questions][<?php echo esc_attr( $index ); ?>][text_en]" value="<?php echo esc_attr( $question['text_en'] ); ?>" /></p>
 				<p><label><?php esc_html_e( 'Question Text (UR)', 'coachpro-ai-teacher-social-branding' ); ?></label><input type="text" class="widefat" dir="rtl" name="platform[questions][<?php echo esc_attr( $index ); ?>][text_ur]" value="<?php echo esc_attr( $question['text_ur'] ); ?>" /></p>
+
+				<?php
+				$left_url  = isset( $question['compare_left_image_url'] ) ? $question['compare_left_image_url'] : '';
+				$right_url = isset( $question['compare_right_image_url'] ) ? $question['compare_right_image_url'] : '';
+				?>
+
 				<p>
 					<label><?php esc_html_e( 'Compare Image (Needs Improvement)', 'coachpro-ai-teacher-social-branding' ); ?></label>
-					<input type="url" class="widefat cpai-image-url-input" name="platform[questions][<?php echo esc_attr( $index ); ?>][compare_left_image_url]" value="<?php echo esc_url( isset( $question['compare_left_image_url'] ) ? $question['compare_left_image_url'] : '' ); ?>" placeholder="https://example.com/needs-improvement.jpg" />
-					<button type="button" class="button cpai-upload-image-btn" style="margin-top:8px;"><?php esc_html_e( 'Upload / Select Image', 'coachpro-ai-teacher-social-branding' ); ?></button>
+					<div class="cpai-img-field" style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-top:4px;">
+						<img class="cpai-image-preview" src="<?php echo esc_url( $left_url ); ?>" alt="" style="max-width:120px;max-height:90px;object-fit:cover;border:1px solid #ccd0d4;border-radius:4px;<?php echo $left_url ? 'display:block;' : 'display:none;'; ?>" loading="lazy" />
+						<div style="flex:1;min-width:200px;">
+							<input type="url" class="widefat cpai-image-url-input" name="platform[questions][<?php echo esc_attr( $index ); ?>][compare_left_image_url]" value="<?php echo esc_url( $left_url ); ?>" placeholder="https://example.com/needs-improvement.jpg" style="margin-bottom:6px;" />
+							<button type="button" class="button cpai-upload-image-btn"><?php esc_html_e( 'Select from Media Library', 'coachpro-ai-teacher-social-branding' ); ?></button>
+							<button type="button" class="button cpai-remove-image-btn" style="margin-left:4px;<?php echo $left_url ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Remove', 'coachpro-ai-teacher-social-branding' ); ?></button>
+						</div>
+					</div>
 				</p>
+
 				<p>
 					<label><?php esc_html_e( 'Compare Image (Recommended)', 'coachpro-ai-teacher-social-branding' ); ?></label>
-					<input type="url" class="widefat cpai-image-url-input" name="platform[questions][<?php echo esc_attr( $index ); ?>][compare_right_image_url]" value="<?php echo esc_url( isset( $question['compare_right_image_url'] ) ? $question['compare_right_image_url'] : '' ); ?>" placeholder="https://example.com/recommended.jpg" />
-					<button type="button" class="button cpai-upload-image-btn" style="margin-top:8px;"><?php esc_html_e( 'Upload / Select Image', 'coachpro-ai-teacher-social-branding' ); ?></button>
+					<div class="cpai-img-field" style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-top:4px;">
+						<img class="cpai-image-preview" src="<?php echo esc_url( $right_url ); ?>" alt="" style="max-width:120px;max-height:90px;object-fit:cover;border:1px solid #ccd0d4;border-radius:4px;<?php echo $right_url ? 'display:block;' : 'display:none;'; ?>" loading="lazy" />
+						<div style="flex:1;min-width:200px;">
+							<input type="url" class="widefat cpai-image-url-input" name="platform[questions][<?php echo esc_attr( $index ); ?>][compare_right_image_url]" value="<?php echo esc_url( $right_url ); ?>" placeholder="https://example.com/recommended.jpg" style="margin-bottom:6px;" />
+							<button type="button" class="button cpai-upload-image-btn"><?php esc_html_e( 'Select from Media Library', 'coachpro-ai-teacher-social-branding' ); ?></button>
+							<button type="button" class="button cpai-remove-image-btn" style="margin-left:4px;<?php echo $right_url ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Remove', 'coachpro-ai-teacher-social-branding' ); ?></button>
+						</div>
+					</div>
 				</p>
+
 				<p><label><?php esc_html_e( 'Negative Title (EN)', 'coachpro-ai-teacher-social-branding' ); ?></label><input type="text" class="widefat" name="platform[questions][<?php echo esc_attr( $index ); ?>][instruction_en][title]" value="<?php echo esc_attr( $question['instruction_en']['title'] ); ?>" /></p>
 				<p><label><?php esc_html_e( 'Negative Steps (EN, one per line)', 'coachpro-ai-teacher-social-branding' ); ?></label><textarea class="widefat" rows="3" name="platform[questions][<?php echo esc_attr( $index ); ?>][instruction_en][steps]"><?php echo esc_textarea( implode( "\n", $question['instruction_en']['steps'] ) ); ?></textarea></p>
 				<p><label><?php esc_html_e( 'Tips (EN, one per line)', 'coachpro-ai-teacher-social-branding' ); ?></label><textarea class="widefat" rows="3" name="platform[questions][<?php echo esc_attr( $index ); ?>][instruction_en][tips]"><?php echo esc_textarea( implode( "\n", $question['instruction_en']['tips'] ) ); ?></textarea></p>
@@ -48,7 +68,7 @@
 				<p><label><?php esc_html_e( 'Related Tool Placeholder (EN HTML/Embed)', 'coachpro-ai-teacher-social-branding' ); ?></label><textarea class="widefat" rows="2" name="platform[questions][<?php echo esc_attr( $index ); ?>][instruction_en][tool]"><?php echo esc_textarea( $question['instruction_en']['tool'] ); ?></textarea></p>
 				<p><label><?php esc_html_e( 'Related Tool Placeholder (UR HTML/Embed)', 'coachpro-ai-teacher-social-branding' ); ?></label><textarea class="widefat" rows="2" dir="rtl" name="platform[questions][<?php echo esc_attr( $index ); ?>][instruction_ur][tool]"><?php echo esc_textarea( $question['instruction_ur']['tool'] ); ?></textarea></p>
 			</div>
-		<?php endforeach; ?>
+			<?php endforeach; ?>
 
 		<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Save Platform', 'coachpro-ai-teacher-social-branding' ); ?></button></p>
 	</form>
