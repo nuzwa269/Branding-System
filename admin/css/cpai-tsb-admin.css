@@ -147,9 +147,19 @@
 	font-size: 16px;
 }
 
-.cpai-tsb-placeholder-card {
-	text-decoration: none;
+.cpai-image-preview {
+	max-width: 200px;
+	max-height: 100px;
+	margin-top: 8px;
+	display: block;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
 }
+
+.cpai-remove-image-btn {
+	margin-top: 4px !important;
+}
+
 @media (max-width: 1200px) {
 	.cpai-tsb-platform-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
