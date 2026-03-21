@@ -134,9 +134,20 @@ class CPAI_TSB_Public {
 			'id'             => ! empty( $question['id'] ) ? sanitize_key( $question['id'] ) : 'q' . absint( $position ),
 			'text_en'        => isset( $question['text_en'] ) ? (string) $question['text_en'] : '',
 			'text_ur'        => isset( $question['text_ur'] ) ? (string) $question['text_ur'] : '',
+			'compare_left_image_url'  => $this->sanitize_url_value( isset( $question['compare_left_image_url'] ) ? $question['compare_left_image_url'] : '' ),
+			'compare_right_image_url' => $this->sanitize_url_value( isset( $question['compare_right_image_url'] ) ? $question['compare_right_image_url'] : '' ),
 			'instruction_en' => $this->normalize_instruction_for_public( $instruction_en ),
 			'instruction_ur' => $this->normalize_instruction_for_public( $instruction_ur ),
 		);
+	}
+
+
+	private function sanitize_url_value( $value ) {
+		if ( ! is_scalar( $value ) ) {
+			return '';
+		}
+
+		return esc_url_raw( (string) $value );
 	}
 
 	private function normalize_instruction_for_public( $instruction ) {
