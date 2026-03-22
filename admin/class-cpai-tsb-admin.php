@@ -313,10 +313,7 @@ class CPAI_TSB_Admin {
 			header( 'Content-Type: text/csv; charset=utf-8' );
 			header( 'Content-Disposition: attachment; filename=' . $filename_base . '.csv' );
 
-			$output = fopen( 'php://output', 'w' );
-			fputcsv( $output, array( 'platform_name', 'question_en', 'question_ur', 'compare_left_image_url', 'compare_right_image_url', 'suggestion_title_en', 'suggestion_title_ur', 'suggestion_steps', 'tips', 'related_tool_placeholder' ) );
-			foreach ( $rows as $row ) {
-				fputcsv( $output, $row );
+		fputcsv( $output, array( 'platform_name', 'question_en', 'question_ur', 'compare_left_image_url', 'compare_right_image_url', 'suggestion_title_en', 'suggestion_title_ur', 'suggestion_steps', 'tips', 'related_tool_placeholder' ) );
 			}
 			fclose( $output );
 			exit;
