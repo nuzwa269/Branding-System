@@ -258,12 +258,14 @@ class CPAI_TSB_Admin {
 						'steps' => $normalized['suggestion_steps'],
 						'tips'  => $normalized['tips'],
 						'tool'  => $normalized['related_tool_placeholder'],
+						'prompt' => isset( $normalized['prompt_template_en'] ) ? $normalized['prompt_template_en'] : '',
 					),
 					'instruction_ur' => array(
 						'title' => $normalized['suggestion_title_ur'],
 						'steps' => $normalized['suggestion_steps'],
 						'tips'  => $normalized['tips'],
 						'tool'  => $normalized['related_tool_placeholder'],
+						'prompt' => isset( $normalized['prompt_template_ur'] ) ? $normalized['prompt_template_ur'] : '',
 					),
 				),
 				$position + 1
@@ -303,6 +305,8 @@ class CPAI_TSB_Admin {
 					'suggestion_steps'          => implode( ' | ', $question['instruction_en']['steps'] ),
 					'tips'                      => implode( ' | ', $question['instruction_en']['tips'] ),
 					'related_tool_placeholder'  => $question['instruction_en']['tool'],
+					'prompt_template_en'        => isset( $question['instruction_en']['prompt'] ) ? $question['instruction_en']['prompt'] : '',
+					'prompt_template_ur'        => isset( $question['instruction_ur']['prompt'] ) ? $question['instruction_ur']['prompt'] : '',
 				);
 			}
 		}
@@ -314,7 +318,7 @@ class CPAI_TSB_Admin {
 			header( 'Content-Disposition: attachment; filename=' . $filename_base . '.csv' );
 
 			$output = fopen( 'php://output', 'w' );
-			fputcsv( $output, array( 'platform_name', 'question_en', 'question_ur', 'compare_left_image_url', 'compare_right_image_url', 'suggestion_title_en', 'suggestion_title_ur', 'suggestion_steps', 'tips', 'related_tool_placeholder' ) );
+			fputcsv( $output, array( 'platform_name', 'question_en', 'question_ur', 'compare_left_image_url', 'compare_right_image_url', 'suggestion_title_en', 'suggestion_title_ur', 'suggestion_steps', 'tips', 'related_tool_placeholder', 'prompt_template_en', 'prompt_template_ur' ) );
 			foreach ( $rows as $row ) {
 				fputcsv( $output, $row );
 			}
@@ -356,12 +360,14 @@ class CPAI_TSB_Admin {
 						'steps' => $row['suggestion_steps'],
 						'tips'  => $row['tips'],
 						'tool'  => $row['related_tool_placeholder'],
+						'prompt' => isset( $row['prompt_template_en'] ) ? $row['prompt_template_en'] : '',
 					),
 					'instruction_ur' => array(
 						'title' => $row['suggestion_title_ur'],
 						'steps' => $row['suggestion_steps_ur'],
 						'tips'  => $row['tips_ur'],
 						'tool'  => $row['related_tool_placeholder_ur'],
+						'prompt' => isset( $row['prompt_template_ur'] ) ? $row['prompt_template_ur'] : '',
 					),
 				),
 				$starting_index + $offset + 1
@@ -497,6 +503,8 @@ class CPAI_TSB_Admin {
 			'suggestion_steps'          => $this->sanitize_lines( isset( $row['suggestion_steps'] ) ? $row['suggestion_steps'] : '' ),
 			'tips'                      => $this->sanitize_lines( isset( $row['tips'] ) ? $row['tips'] : '' ),
 			'related_tool_placeholder'  => isset( $row['related_tool_placeholder'] ) ? wp_kses_post( $row['related_tool_placeholder'] ) : '',
+			'prompt_template_en'        => isset( $row['prompt_template_en'] ) ? wp_kses_post( $row['prompt_template_en'] ) : '',
+			'prompt_template_ur'        => isset( $row['prompt_template_ur'] ) ? wp_kses_post( $row['prompt_template_ur'] ) : '',
 		);
 	}
 
@@ -817,12 +825,14 @@ class CPAI_TSB_Admin {
 				'steps' => array(),
 				'tips'  => array(),
 				'tool'  => '',
+				'prompt' => '',
 			),
 			'instruction_ur' => array(
 				'title' => '',
 				'steps' => array(),
 				'tips'  => array(),
 				'tool'  => '',
+				'prompt' => '',
 			),
 		);
 	}
@@ -883,6 +893,7 @@ class CPAI_TSB_Admin {
 			'steps' => $this->sanitize_lines( isset( $instruction['steps'] ) ? $instruction['steps'] : '' ),
 			'tips'  => $this->sanitize_lines( isset( $instruction['tips'] ) ? $instruction['tips'] : '' ),
 			'tool'  => isset( $instruction['tool'] ) ? wp_kses_post( $instruction['tool'] ) : '',
+			'prompt' => isset( $instruction['prompt'] ) ? wp_kses_post( $instruction['prompt'] ) : '',
 		);
 	}
 

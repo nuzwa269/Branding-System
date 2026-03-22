@@ -143,10 +143,10 @@
 						<div class="cpai-tips-title" data-en="Professional Tips" data-ur="پروفیشنل ٹپس">Professional Tips</div>
 						<p class="cpai-tips-copy"></p>
 					</div>
-					<div class="cpai-tool-card">
-						<div class="cpai-tool-title" data-en="Related Tool" data-ur="متعلقہ ٹول">Related Tool</div>
-						<div class="cpai-tool-slot"></div>
-					</div>
+						<div class="cpai-tool-card">
+							<div class="cpai-tool-title">Related Tool</div>
+							<div class="cpai-tool-slot"></div>
+						</div>
 				</div>`
 			);
 
@@ -240,7 +240,8 @@
 							'Improve contrast for key UI/profile information.'
 						],
 						tips: question.instruction_en && Array.isArray(question.instruction_en.tips) && question.instruction_en.tips.length ? question.instruction_en.tips[0] : 'Add practical guidance here for future platform-specific content.',
-						tool: question.instruction_en && question.instruction_en.tool ? question.instruction_en.tool : ''
+						tool: question.instruction_en && question.instruction_en.tool ? question.instruction_en.tool : '',
+						prompt: question.instruction_en && question.instruction_en.prompt ? question.instruction_en.prompt : ''
 					},
 					ur: {
 						title: question.instruction_ur && question.instruction_ur.title ? question.instruction_ur.title : 'اصلاحی چیک لسٹ',
@@ -250,7 +251,8 @@
 							'اہم معلومات کے لیے بہتر کنٹراسٹ بنائیں۔'
 						],
 						tips: question.instruction_ur && Array.isArray(question.instruction_ur.tips) && question.instruction_ur.tips.length ? question.instruction_ur.tips[0] : 'آئندہ پلیٹ فارم مخصوص مواد کے لیے یہاں عملی رہنمائی شامل کریں۔',
-						tool: question.instruction_ur && question.instruction_ur.tool ? question.instruction_ur.tool : ''
+						tool: question.instruction_ur && question.instruction_ur.tool ? question.instruction_ur.tool : '',
+						prompt: question.instruction_ur && question.instruction_ur.prompt ? question.instruction_ur.prompt : ''
 					}
 				}
 			};
@@ -361,8 +363,14 @@
 			}
 			const lang = this.state.lang;
 			const content = model.optimization[lang] || model.optimization.en;
+			const resourceType = content.tool ? 'tool' : (content.prompt ? 'prompt' : '');
+			const resourceTitle = resourceType === 'prompt'
+				? (lang === 'ur' ? 'پرومپٹ ٹیمپلیٹ' : 'Prompt Template')
+				: (lang === 'ur' ? 'متعلقہ ٹول' : 'Related Tool');
+			const resourceContent = resourceType === 'prompt' ? content.prompt : content.tool;
 
 			card.find('.cpai-optimization-title').text(content.title);
+			card.find('.cpai-tool-title').text(resourceTitle);
 
 			const list = card.find('.cpai-suggestion-list');
 			list.empty();
@@ -373,8 +381,8 @@
 				card.find('.cpai-tips-copy').text(content.tips || '');
 
 				const toolSlot = card.find('.cpai-tool-slot');
-				if (content.tool) {
-					toolSlot.html(this.normalizeToolMarkup(content.tool));
+				if (resourceContent) {
+					toolSlot.html(this.normalizeToolMarkup(resourceContent));
 				} else {
 					toolSlot.text(lang === 'ur' ? 'یہ حصہ مستقبل کے ٹول انضمام کے لیے محفوظ ہے۔' : 'Reserved for future tool integration.');
 				}

@@ -158,6 +158,7 @@ class CPAI_TSB_Public {
 			'steps' => isset( $instruction['steps'] ) && is_array( $instruction['steps'] ) ? array_values( $instruction['steps'] ) : array(),
 			'tips'  => isset( $instruction['tips'] ) && is_array( $instruction['tips'] ) ? array_values( $instruction['tips'] ) : array(),
 			'tool'  => isset( $instruction['tool'] ) ? (string) $instruction['tool'] : '',
+			'prompt' => isset( $instruction['prompt'] ) ? (string) $instruction['prompt'] : '',
 		);
 	}
 
@@ -176,8 +177,8 @@ class CPAI_TSB_Public {
 				'id'             => 'q1',
 				'text_en'        => '',
 				'text_ur'        => '',
-				'instruction_en' => array( 'title' => '', 'steps' => array(), 'tips' => array(), 'tool' => '' ),
-				'instruction_ur' => array( 'title' => '', 'steps' => array(), 'tips' => array(), 'tool' => '' ),
+				'instruction_en' => array( 'title' => '', 'steps' => array(), 'tips' => array(), 'tool' => '', 'prompt' => '' ),
+				'instruction_ur' => array( 'title' => '', 'steps' => array(), 'tips' => array(), 'tool' => '', 'prompt' => '' ),
 			),
 		);
 
