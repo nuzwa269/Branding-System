@@ -38,6 +38,21 @@
 			titleEl.html(String(title).replace(/\n/g, '<br>'));
 		}
 
+		normalizeToolMarkup(toolContent) {
+			if (!toolContent) {
+				return '';
+			}
+
+			const content = String(toolContent);
+			if (!/&lt;|&gt;|&quot;|&#0*39;|&#x0*27;|&amp;/.test(content)) {
+				return content;
+			}
+
+			const textarea = document.createElement('textarea');
+			textarea.innerHTML = content;
+			return textarea.value;
+		}
+
 		renderNav() {
 			this.elements.nav.empty();
 			this.data.platforms.forEach((platform, index) => {
@@ -355,9 +370,15 @@
 				list.append(`<li><span class="cpai-suggestion-icon"><i class="fas fa-check-circle"></i></span><span>${item}</span></li>`);
 			});
 
-			card.find('.cpai-tips-copy').text(content.tips || '');
-			card.find('.cpai-tool-slot').text(content.tool || (lang === 'ur' ? 'یہ حصہ مستقبل کے ٹول انضمام کے لیے محفوظ ہے۔' : 'Reserved for future tool integration.'));
-		}
+				card.find('.cpai-tips-copy').text(content.tips || '');
+
+				const toolSlot = card.find('.cpai-tool-slot');
+				if (content.tool) {
+					toolSlot.html(this.normalizeToolMarkup(content.tool));
+				} else {
+					toolSlot.text(lang === 'ur' ? 'یہ حصہ مستقبل کے ٹول انضمام کے لیے محفوظ ہے۔' : 'Reserved for future tool integration.');
+				}
+			}
 
 		updateProgress(platformIndex) {
 			const platform = this.data.platforms[platformIndex];
