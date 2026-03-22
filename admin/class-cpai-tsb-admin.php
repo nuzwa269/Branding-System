@@ -491,6 +491,8 @@ class CPAI_TSB_Admin {
 			'compare_right_image_url'   => isset( $row['compare_right_image_url'] ) ? esc_url_raw( $row['compare_right_image_url'] ) : '',
 			'suggestion_title_en'       => isset( $row['suggestion_title_en'] ) ? sanitize_text_field( $row['suggestion_title_en'] ) : '',
 			'suggestion_title_ur'       => isset( $row['suggestion_title_ur'] ) ? sanitize_text_field( $row['suggestion_title_ur'] ) : '',
+				'compare_left_image_url'    => $this->sanitize_url_value( isset( $row['compare_left_image_url'] ) ? $row['compare_left_image_url'] : '' ),
+			'compare_right_image_url'   => $this->sanitize_url_value( isset( $row['compare_right_image_url'] ) ? $row['compare_right_image_url'] : '' ),
 			'suggestion_steps'          => $this->sanitize_lines( isset( $row['suggestion_steps'] ) ? $row['suggestion_steps'] : '' ),
 			'tips'                      => $this->sanitize_lines( isset( $row['tips'] ) ? $row['tips'] : '' ),
 			'related_tool_placeholder'  => isset( $row['related_tool_placeholder'] ) ? wp_kses_post( $row['related_tool_placeholder'] ) : '',
