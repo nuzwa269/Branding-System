@@ -355,9 +355,15 @@
 				list.append(`<li><span class="cpai-suggestion-icon"><i class="fas fa-check-circle"></i></span><span>${item}</span></li>`);
 			});
 
-			card.find('.cpai-tips-copy').text(content.tips || '');
-			card.find('.cpai-tool-slot').text(content.tool || (lang === 'ur' ? 'یہ حصہ مستقبل کے ٹول انضمام کے لیے محفوظ ہے۔' : 'Reserved for future tool integration.'));
-		}
+				card.find('.cpai-tips-copy').text(content.tips || '');
+
+				const toolSlot = card.find('.cpai-tool-slot');
+				if (content.tool) {
+					toolSlot.html(content.tool);
+				} else {
+					toolSlot.text(lang === 'ur' ? 'یہ حصہ مستقبل کے ٹول انضمام کے لیے محفوظ ہے۔' : 'Reserved for future tool integration.');
+				}
+			}
 
 		updateProgress(platformIndex) {
 			const platform = this.data.platforms[platformIndex];

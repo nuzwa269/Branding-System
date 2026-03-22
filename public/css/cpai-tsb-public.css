@@ -349,6 +349,24 @@
     background: #f8fbff;
 }
 
+.cpai-tool-slot a {
+    color: #1d4ed8;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.cpai-tool-slot p,
+.cpai-tool-slot ul,
+.cpai-tool-slot ol {
+    margin: 0 0 0.45rem;
+}
+
+.cpai-tool-slot p:last-child,
+.cpai-tool-slot ul:last-child,
+.cpai-tool-slot ol:last-child {
+    margin-bottom: 0;
+}
+
 .cpai-success-msg {
     margin-top: 0.65rem;
     font-size: 0.8rem;
