@@ -11,7 +11,7 @@
  * @package           CoachPro_AI_Social_Branding
  *
  * Plugin Name:       COACHPRO AI – Teacher's Social Branding System
- * Plugin URI:        https://im.coachpro.ai/
+ * Plugin URI:        https://coachpro.ai/
  * Description:       An interactive social media branding guidance system for teachers, supporting English and Urdu.
  * Version:           1.0.1
  * Author:            Nuzhat Waseem
