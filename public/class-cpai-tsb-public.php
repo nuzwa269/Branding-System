@@ -157,7 +157,9 @@ class CPAI_TSB_Public {
 			'title' => isset( $instruction['title'] ) ? (string) $instruction['title'] : '',
 			'steps' => isset( $instruction['steps'] ) && is_array( $instruction['steps'] ) ? array_values( $instruction['steps'] ) : array(),
 			'tips'  => isset( $instruction['tips'] ) && is_array( $instruction['tips'] ) ? array_values( $instruction['tips'] ) : array(),
-			'tool'  => isset( $instruction['tool'] ) ? (string) $instruction['tool'] : '',
+			'tool'            => isset( $instruction['tool'] ) ? (string) $instruction['tool'] : '',
+			'tool_link'       => isset( $instruction['tool_link'] ) ? (string) $instruction['tool_link'] : ( isset( $instruction['tool'] ) ? (string) $instruction['tool'] : '' ),
+			'prompt_template' => isset( $instruction['prompt_template'] ) ? (string) $instruction['prompt_template'] : '',
 		);
 	}
 
@@ -176,8 +178,8 @@ class CPAI_TSB_Public {
 				'id'             => 'q1',
 				'text_en'        => '',
 				'text_ur'        => '',
-				'instruction_en' => array( 'title' => '', 'steps' => array(), 'tips' => array(), 'tool' => '' ),
-				'instruction_ur' => array( 'title' => '', 'steps' => array(), 'tips' => array(), 'tool' => '' ),
+				'instruction_en' => array( 'title' => '', 'steps' => array(), 'tips' => array(), 'tool' => '', 'tool_link' => '', 'prompt_template' => '' ),
+				'instruction_ur' => array( 'title' => '', 'steps' => array(), 'tips' => array(), 'tool' => '', 'tool_link' => '', 'prompt_template' => '' ),
 			),
 		);
 
@@ -241,13 +243,17 @@ class CPAI_TSB_Public {
 					'title' => 'Rewrite your intro for impact',
 					'steps' => array( 'Start with the audience you serve.', 'Mention one measurable learning result.', 'End with a friendly call to action such as message for guidance.' ),
 					'tips'  => array( 'Use simple language parents and students can understand immediately.' ),
-					'tool'  => '<em>Tool idea:</em> 3-line bio formula worksheet.',
+					'tool_link' => '',
+					'tool'  => '',
+					'prompt_template' => 'Rewrite my bio for [platform]. Mention who I teach, the result students get, one proof point, and end with a CTA.',
 				),
 				'instruction_ur' => array(
 					'title' => 'انٹرو کو اثر انگیز بنائیں',
 					'steps' => array( 'پہلی لائن میں واضح کریں کہ آپ کن طلبہ کی مدد کرتے ہیں۔', 'ایک قابلِ پیمائش نتیجہ شامل کریں۔', 'آخر میں میسج/رابطے کی آسان کال ٹو ایکشن دیں۔' ),
 					'tips'  => array( 'سادہ زبان استعمال کریں تاکہ والدین اور طلبہ فوراً سمجھ سکیں۔' ),
-					'tool'  => '<em>ٹول آئیڈیا:</em> 3 لائن بایو فارمولا۔',
+					'tool_link' => '',
+					'tool'  => '',
+					'prompt_template' => 'میرا [platform] بایو دوبارہ لکھیں۔ بتائیں میں کن طلبہ کو پڑھاتا/پڑھاتی ہوں، انہیں کیا نتیجہ ملتا ہے، ایک ثبوت شامل کریں، اور آخر میں واضح CTA دیں۔',
 				),
 			),
 			array(
