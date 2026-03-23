@@ -316,7 +316,8 @@
 }
 
 .cpai-tips-card,
-.cpai-tool-card {
+.cpai-tool-card,
+.cpai-prompt-card {
     margin-top: 0.65rem;
     border: 1px solid #dbeafe;
     border-radius: 10px;
@@ -325,7 +326,8 @@
 }
 
 .cpai-tips-title,
-.cpai-tool-title {
+.cpai-tool-title,
+.cpai-prompt-title {
     font-size: 0.74rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -335,7 +337,8 @@
 }
 
 .cpai-tips-copy,
-.cpai-tool-slot {
+.cpai-tool-slot,
+.cpai-prompt-slot {
     margin: 0;
     color: #334155;
     font-size: 0.8rem;
@@ -347,6 +350,17 @@
     border-radius: 8px;
     padding: 0.45rem;
     background: #f8fbff;
+}
+
+
+.cpai-prompt-slot {
+    min-height: 3rem;
+    white-space: pre-wrap;
+    border: 1px dashed #93c5fd;
+    border-radius: 8px;
+    padding: 0.65rem;
+    background: #f8fbff;
+    font-family: inherit;
 }
 
 .cpai-tool-slot a {

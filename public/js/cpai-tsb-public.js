@@ -129,8 +129,12 @@
 						<p class="cpai-tips-copy"></p>
 					</div>
 					<div class="cpai-tool-card">
-						<div class="cpai-tool-title" data-en="Related Tool" data-ur="متعلقہ ٹول">Related Tool</div>
+						<div class="cpai-tool-title" data-en="Tool Link" data-ur="ٹول لنک">Tool Link</div>
 						<div class="cpai-tool-slot"></div>
+					</div>
+					<div class="cpai-prompt-card">
+						<div class="cpai-prompt-title" data-en="Prompt Template" data-ur="پرومٹ ٹیمپلیٹ">Prompt Template</div>
+						<pre class="cpai-prompt-slot"></pre>
 					</div>
 				</div>`
 			);
@@ -225,7 +229,9 @@
 							'Improve contrast for key UI/profile information.'
 						],
 						tips: question.instruction_en && Array.isArray(question.instruction_en.tips) && question.instruction_en.tips.length ? question.instruction_en.tips[0] : 'Add practical guidance here for future platform-specific content.',
-						tool: question.instruction_en && question.instruction_en.tool ? question.instruction_en.tool : ''
+						tool: question.instruction_en && question.instruction_en.tool ? question.instruction_en.tool : '',
+						toolLink: question.instruction_en && question.instruction_en.tool_link ? question.instruction_en.tool_link : (question.instruction_en && question.instruction_en.tool ? question.instruction_en.tool : ''),
+						promptTemplate: question.instruction_en && question.instruction_en.prompt_template ? question.instruction_en.prompt_template : ''
 					},
 					ur: {
 						title: question.instruction_ur && question.instruction_ur.title ? question.instruction_ur.title : 'اصلاحی چیک لسٹ',
@@ -235,7 +241,9 @@
 							'اہم معلومات کے لیے بہتر کنٹراسٹ بنائیں۔'
 						],
 						tips: question.instruction_ur && Array.isArray(question.instruction_ur.tips) && question.instruction_ur.tips.length ? question.instruction_ur.tips[0] : 'آئندہ پلیٹ فارم مخصوص مواد کے لیے یہاں عملی رہنمائی شامل کریں۔',
-						tool: question.instruction_ur && question.instruction_ur.tool ? question.instruction_ur.tool : ''
+						tool: question.instruction_ur && question.instruction_ur.tool ? question.instruction_ur.tool : '',
+						toolLink: question.instruction_ur && question.instruction_ur.tool_link ? question.instruction_ur.tool_link : (question.instruction_ur && question.instruction_ur.tool ? question.instruction_ur.tool : ''),
+						promptTemplate: question.instruction_ur && question.instruction_ur.prompt_template ? question.instruction_ur.prompt_template : ''
 					}
 				}
 			};
@@ -357,11 +365,24 @@
 
 				card.find('.cpai-tips-copy').text(content.tips || '');
 
+				const toolCard = card.find('.cpai-tool-card');
 				const toolSlot = card.find('.cpai-tool-slot');
-				if (content.tool) {
-					toolSlot.html(content.tool);
+				if (content.toolLink) {
+					toolSlot.html(content.toolLink);
+					toolCard.show();
 				} else {
-					toolSlot.text(lang === 'ur' ? 'یہ حصہ مستقبل کے ٹول انضمام کے لیے محفوظ ہے۔' : 'Reserved for future tool integration.');
+					toolSlot.empty();
+					toolCard.hide();
+				}
+
+				const promptCard = card.find('.cpai-prompt-card');
+				const promptSlot = card.find('.cpai-prompt-slot');
+				if (content.promptTemplate) {
+					promptSlot.text(content.promptTemplate);
+					promptCard.show();
+				} else {
+					promptSlot.text('');
+					promptCard.hide();
 				}
 			}
 

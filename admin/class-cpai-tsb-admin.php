@@ -257,13 +257,17 @@ class CPAI_TSB_Admin {
 						'title' => $normalized['suggestion_title_en'],
 						'steps' => $normalized['suggestion_steps'],
 						'tips'  => $normalized['tips'],
-						'tool'  => $normalized['related_tool_placeholder'],
+						'tool_link'       => $normalized['related_tool_link'],
+						'tool'            => $normalized['related_tool_link'],
+						'prompt_template' => $normalized['prompt_template'],
 					),
 					'instruction_ur' => array(
 						'title' => $normalized['suggestion_title_ur'],
 						'steps' => $normalized['suggestion_steps'],
 						'tips'  => $normalized['tips'],
-						'tool'  => $normalized['related_tool_placeholder'],
+						'tool_link'       => $normalized['related_tool_link'],
+						'tool'            => $normalized['related_tool_link'],
+						'prompt_template' => $normalized['prompt_template'],
 					),
 				),
 				$position + 1
@@ -302,7 +306,8 @@ class CPAI_TSB_Admin {
 					'suggestion_title_ur'       => $question['instruction_ur']['title'],
 					'suggestion_steps'          => implode( ' | ', $question['instruction_en']['steps'] ),
 					'tips'                      => implode( ' | ', $question['instruction_en']['tips'] ),
-					'related_tool_placeholder'  => $question['instruction_en']['tool'],
+					'related_tool_link'         => isset( $question['instruction_en']['tool_link'] ) ? $question['instruction_en']['tool_link'] : $question['instruction_en']['tool'],
+					'prompt_template'          => isset( $question['instruction_en']['prompt_template'] ) ? $question['instruction_en']['prompt_template'] : '',
 				);
 			}
 		}
@@ -314,7 +319,7 @@ class CPAI_TSB_Admin {
 			header( 'Content-Disposition: attachment; filename=' . $filename_base . '.csv' );
 
 			$output = fopen( 'php://output', 'w' );
-			fputcsv( $output, array( 'platform_name', 'question_en', 'question_ur', 'compare_left_image_url', 'compare_right_image_url', 'suggestion_title_en', 'suggestion_title_ur', 'suggestion_steps', 'tips', 'related_tool_placeholder' ) );
+			fputcsv( $output, array( 'platform_name', 'question_en', 'question_ur', 'compare_left_image_url', 'compare_right_image_url', 'suggestion_title_en', 'suggestion_title_ur', 'suggestion_steps', 'tips', 'related_tool_link', 'prompt_template' ) );
 			foreach ( $rows as $row ) {
 				fputcsv( $output, $row );
 			}
@@ -355,13 +360,17 @@ class CPAI_TSB_Admin {
 						'title' => $row['suggestion_title_en'],
 						'steps' => $row['suggestion_steps'],
 						'tips'  => $row['tips'],
-						'tool'  => $row['related_tool_placeholder'],
+						'tool_link'       => $row['related_tool_link'],
+					'tool'            => $row['related_tool_link'],
+					'prompt_template' => $row['prompt_template'],
 					),
 					'instruction_ur' => array(
 						'title' => $row['suggestion_title_ur'],
 						'steps' => $row['suggestion_steps_ur'],
 						'tips'  => $row['tips_ur'],
-						'tool'  => $row['related_tool_placeholder_ur'],
+						'tool_link'       => $row['related_tool_link_ur'],
+					'tool'            => $row['related_tool_link_ur'],
+					'prompt_template' => $row['prompt_template_ur'],
 					),
 				),
 				$starting_index + $offset + 1
@@ -397,8 +406,10 @@ class CPAI_TSB_Admin {
 				),
 				'tips'                          => array( 'Educator accounts gain more trust when the profile identity is consistent and personal.' ),
 				'tips_ur'                       => array( 'استاد کے اکاؤنٹس میں مسلسل اور ذاتی پروفائل شناخت اعتماد بڑھاتی ہے۔' ),
-				'related_tool_placeholder'      => '<em>Tool idea:</em> Canva profile photo template.',
-				'related_tool_placeholder_ur'   => '<em>ٹول آئیڈیا:</em> Canva پروفائل فوٹو ٹیمپلیٹ۔',
+				'related_tool_link'             => '<a href="https://www.canva.com/" target="_blank" rel="noopener noreferrer">Canva profile photo template</a>',
+				'related_tool_link_ur'          => '<a href="https://www.canva.com/" target="_blank" rel="noopener noreferrer">Canva پروفائل فوٹو ٹیمپلیٹ</a>',
+				'prompt_template'              => '',
+				'prompt_template_ur'           => '',
 			),
 			array(
 				'question_en'                   => sprintf( 'Is your %s bio written around student outcomes instead of generic teacher wording?', $platform_name_en ),
@@ -417,8 +428,10 @@ class CPAI_TSB_Admin {
 				),
 				'tips'                          => array( 'Outcome-based bios attract serious students faster than generic introductions.' ),
 				'tips_ur'                       => array( 'نتیجہ پر مبنی بایو عام تعارف سے زیادہ سنجیدہ طلبہ کو متوجہ کرتا ہے۔' ),
-				'related_tool_placeholder'      => '<em>Tool idea:</em> Bio rewrite prompt template.',
-				'related_tool_placeholder_ur'   => '<em>ٹول آئیڈیا:</em> بایو ری رائٹ پرامپٹ ٹیمپلیٹ۔',
+				'related_tool_link'             => '',
+				'related_tool_link_ur'          => '',
+				'prompt_template'              => 'Rewrite my bio for [platform]. Mention who I teach, the result students get, one proof point, and end with a CTA.',
+				'prompt_template_ur'           => 'میرا [platform] بایو دوبارہ لکھیں۔ بتائیں میں کن طلبہ کو پڑھاتا/پڑھاتی ہوں، انہیں کیا نتیجہ ملتا ہے، ایک ثبوت شامل کریں، اور آخر میں واضح CTA دیں۔',
 			),
 			array(
 				'question_en'                   => sprintf( 'Are your %s posts using clear hooks and a strong call-to-action?', $platform_name_en ),
@@ -437,8 +450,10 @@ class CPAI_TSB_Admin {
 				),
 				'tips'                          => array( 'A predictable content format improves audience retention and response rate.' ),
 				'tips_ur'                       => array( 'مسلسل کنٹینٹ فارمیٹ سے آڈینس ریٹینشن اور رسپانس بہتر ہوتا ہے۔' ),
-				'related_tool_placeholder'      => '<em>Tool idea:</em> Weekly content planner.',
-				'related_tool_placeholder_ur'   => '<em>ٹول آئیڈیا:</em> ویکلی کنٹینٹ پلینر۔',
+				'related_tool_link'             => '<em>Tool link:</em> Weekly content planner.',
+				'related_tool_link_ur'          => '<em>ٹول لنک:</em> ویکلی کنٹینٹ پلینر۔',
+				'prompt_template'              => '',
+				'prompt_template_ur'           => '',
 			),
 			array(
 				'question_en'                   => sprintf( 'Do you publish social proof on %s (student results, testimonials, or feedback) every week?', $platform_name_en ),
@@ -457,8 +472,10 @@ class CPAI_TSB_Admin {
 				),
 				'tips'                          => array( 'Consistent proof-based content raises credibility and inquiries.' ),
 				'tips_ur'                       => array( 'مسلسل ثبوت پر مبنی مواد سے ساکھ اور انکوائریز میں اضافہ ہوتا ہے۔' ),
-				'related_tool_placeholder'      => '<em>Tool idea:</em> Testimonial carousel template.',
-				'related_tool_placeholder_ur'   => '<em>ٹول آئیڈیا:</em> ٹیسٹی مونیل کیروسل ٹیمپلیٹ۔',
+				'related_tool_link'             => '<em>Tool link:</em> Testimonial carousel template.',
+				'related_tool_link_ur'          => '<em>ٹول لنک:</em> ٹیسٹی مونیل کیروسل ٹیمپلیٹ۔',
+				'prompt_template'              => '',
+				'prompt_template_ur'           => '',
 			),
 			array(
 				'question_en'                   => sprintf( 'Are you reviewing your %s analytics monthly to improve content performance?', $platform_name_en ),
@@ -477,8 +494,10 @@ class CPAI_TSB_Admin {
 				),
 				'tips'                          => array( 'Small monthly optimization loops create compounding growth over time.' ),
 				'tips_ur'                       => array( 'ماہانہ چھوٹی بہتریاں وقت کے ساتھ بڑا اور مستقل گروتھ دیتی ہیں۔' ),
-				'related_tool_placeholder'      => '<em>Tool idea:</em> Monthly analytics review sheet.',
-				'related_tool_placeholder_ur'   => '<em>ٹول آئیڈیا:</em> ماہانہ اینالیٹکس ریویو شیٹ۔',
+				'related_tool_link'             => '<em>Tool link:</em> Monthly analytics review sheet.',
+				'related_tool_link_ur'          => '<em>ٹول لنک:</em> ماہانہ اینالیٹکس ریویو شیٹ۔',
+				'prompt_template'              => '',
+				'prompt_template_ur'           => '',
 			),
 		);
 	}
@@ -496,7 +515,10 @@ class CPAI_TSB_Admin {
 			'suggestion_title_ur'       => isset( $row['suggestion_title_ur'] ) ? sanitize_text_field( $row['suggestion_title_ur'] ) : '',
 			'suggestion_steps'          => $this->sanitize_lines( isset( $row['suggestion_steps'] ) ? $row['suggestion_steps'] : '' ),
 			'tips'                      => $this->sanitize_lines( isset( $row['tips'] ) ? $row['tips'] : '' ),
-			'related_tool_placeholder'  => isset( $row['related_tool_placeholder'] ) ? wp_kses_post( $row['related_tool_placeholder'] ) : '',
+			'related_tool_link'       => isset( $row['related_tool_link'] ) ? wp_kses_post( $row['related_tool_link'] ) : ( isset( $row['related_tool_placeholder'] ) ? wp_kses_post( $row['related_tool_placeholder'] ) : '' ),
+			'prompt_template'        => isset( $row['prompt_template'] ) ? sanitize_textarea_field( $row['prompt_template'] ) : '',
+			'related_tool_link_ur'   => isset( $row['related_tool_link_ur'] ) ? wp_kses_post( $row['related_tool_link_ur'] ) : '',
+			'prompt_template_ur'     => isset( $row['prompt_template_ur'] ) ? sanitize_textarea_field( $row['prompt_template_ur'] ) : '',
 		);
 	}
 
@@ -816,13 +838,17 @@ class CPAI_TSB_Admin {
 				'title' => '',
 				'steps' => array(),
 				'tips'  => array(),
-				'tool'  => '',
+				'tool'            => '',
+				'tool_link'       => '',
+				'prompt_template' => '',
 			),
 			'instruction_ur' => array(
 				'title' => '',
 				'steps' => array(),
 				'tips'  => array(),
-				'tool'  => '',
+				'tool'            => '',
+				'tool_link'       => '',
+				'prompt_template' => '',
 			),
 		);
 	}
@@ -882,7 +908,9 @@ class CPAI_TSB_Admin {
 			'title' => isset( $instruction['title'] ) ? sanitize_text_field( $instruction['title'] ) : '',
 			'steps' => $this->sanitize_lines( isset( $instruction['steps'] ) ? $instruction['steps'] : '' ),
 			'tips'  => $this->sanitize_lines( isset( $instruction['tips'] ) ? $instruction['tips'] : '' ),
-			'tool'  => isset( $instruction['tool'] ) ? wp_kses_post( $instruction['tool'] ) : '',
+			'tool'            => isset( $instruction['tool'] ) ? wp_kses_post( $instruction['tool'] ) : '',
+			'tool_link'       => isset( $instruction['tool_link'] ) ? wp_kses_post( $instruction['tool_link'] ) : ( isset( $instruction['tool'] ) ? wp_kses_post( $instruction['tool'] ) : '' ),
+			'prompt_template' => isset( $instruction['prompt_template'] ) ? sanitize_textarea_field( $instruction['prompt_template'] ) : '',
 		);
 	}
 
