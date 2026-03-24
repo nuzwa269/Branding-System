@@ -363,28 +363,47 @@
 				list.append(`<li><span class="cpai-suggestion-icon"><i class="fas fa-check-circle"></i></span><span>${item}</span></li>`);
 			});
 
-				card.find('.cpai-tips-copy').text(content.tips || '');
+			card.find('.cpai-tips-copy').text(content.tips || '');
 
-				const toolCard = card.find('.cpai-tool-card');
-				const toolSlot = card.find('.cpai-tool-slot');
-				if (content.toolLink) {
-					toolSlot.html(content.toolLink);
-					toolCard.show();
-				} else {
-					toolSlot.empty();
-					toolCard.hide();
-				}
-
-				const promptCard = card.find('.cpai-prompt-card');
-				const promptSlot = card.find('.cpai-prompt-slot');
-				if (content.promptTemplate) {
-					promptSlot.text(content.promptTemplate);
-					promptCard.show();
-				} else {
-					promptSlot.text('');
-					promptCard.hide();
-				}
+			const toolCard = card.find('.cpai-tool-card');
+			const toolSlot = card.find('.cpai-tool-slot');
+			const toolMarkup = this.formatToolMarkup(content.toolLink);
+			if (toolMarkup) {
+				toolSlot.html(toolMarkup);
+				toolCard.show();
+			} else {
+				toolSlot.empty();
+				toolCard.hide();
 			}
+
+			const promptCard = card.find('.cpai-prompt-card');
+			const promptSlot = card.find('.cpai-prompt-slot');
+			if (content.promptTemplate) {
+				promptSlot.text(content.promptTemplate);
+				promptCard.show();
+			} else {
+				promptSlot.text('');
+				promptCard.hide();
+			}
+		}
+
+		formatToolMarkup(toolLink) {
+			if (!toolLink) {
+				return '';
+			}
+
+			const trimmed = String(toolLink).trim();
+			if (!trimmed) {
+				return '';
+			}
+
+			if (/^https?:\/\//i.test(trimmed)) {
+				const safeUrl = $('<div>').text(trimmed).html();
+				return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeUrl}</a>`;
+			}
+
+			return trimmed;
+		}
 
 		updateProgress(platformIndex) {
 			const platform = this.data.platforms[platformIndex];
