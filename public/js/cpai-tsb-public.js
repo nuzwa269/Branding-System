@@ -441,13 +441,61 @@
 	}
 
 	$(document).ready(function() {
-		if (!window.cpai_tsb_data || !Array.isArray(window.cpai_tsb_data.platforms)) {
-			return;
-		}
-
 		$('.cpai-tsb-wrapper').each(function() {
-			new CoachProBrandingSystem(window.cpai_tsb_data, $(this));
+			const wrapper = $(this);
+			const data = getBootstrapData(wrapper);
+			if (!data || !Array.isArray(data.platforms)) {
+				showLoadingError(wrapper);
+				return;
+			}
+
+			new CoachProBrandingSystem(data, wrapper);
 		});
 	});
+
+	function getBootstrapData(wrapper) {
+		let bootstrap = normalizePayload(window.cpai_tsb_data);
+		const inlinePayload = parseInlinePayload(wrapper);
+		if (inlinePayload) {
+			bootstrap = inlinePayload;
+		}
+		return bootstrap;
+	}
+
+	function parseInlinePayload(wrapper) {
+		const inlineNode = wrapper.find('.cpai-tsb-bootstrap-data').first();
+		if (!inlineNode.length) {
+			return null;
+		}
+
+		try {
+			const raw = inlineNode.text();
+			return normalizePayload(JSON.parse(raw));
+		} catch (err) {
+			return null;
+		}
+	}
+
+	function normalizePayload(payload) {
+		if (!payload || typeof payload !== 'object') {
+			return null;
+		}
+
+		const normalized = Object.assign({
+			platforms: [],
+			strings: {}
+		}, payload);
+
+		if (!Array.isArray(normalized.platforms) && normalized.platforms && typeof normalized.platforms === 'object') {
+			normalized.platforms = Object.values(normalized.platforms);
+		}
+
+		return normalized;
+	}
+
+	function showLoadingError(wrapper) {
+		const content = wrapper.find('.cpai-tsb-content').first();
+		content.html('<div class="cpai-tsb-loading">Unable to load Branding System data. Please refresh the page.</div>');
+	}
 
 })( jQuery );

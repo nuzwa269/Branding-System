@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <?php $instance_id = wp_unique_id( 'cpai-tsb-' ); ?>
 <div id="<?php echo esc_attr( $instance_id ); ?>" class="cpai-tsb-wrapper" data-cpai-instance="<?php echo esc_attr( $instance_id ); ?>">
+	<script type="application/json" class="cpai-tsb-bootstrap-data"><?php echo wp_json_encode( isset( $cpai_tsb_payload ) ? $cpai_tsb_payload : array() ); ?></script>
 
     <!-- Static Title -->
     <div class="cpai-tsb-main-title">
