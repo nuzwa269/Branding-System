@@ -2,8 +2,9 @@
 	'use strict';
 
 	class CoachProBrandingSystem {
-		constructor(data) {
+		constructor(data, rootElement) {
 			this.data = data;
+			this.root = rootElement;
 			this.state = {
 				lang: 'en',
 				activePlatformIndex: 0,
@@ -11,10 +12,10 @@
 			};
 
 			this.elements = {
-				wrapper: $('#cpai-tsb-wrapper'),
-				nav: $('#cpai-tsb-platforms-nav'),
-				content: $('#cpai-tsb-content'),
-				langBtns: $('.cpai-lang-btn')
+				wrapper: this.root,
+				nav: this.root.find('.cpai-tsb-platforms-nav').first(),
+				content: this.root.find('.cpai-tsb-content').first(),
+				langBtns: this.root.find('.cpai-lang-btn')
 			};
 
 			this.init();
@@ -440,9 +441,13 @@
 	}
 
 	$(document).ready(function() {
-		if ($('#cpai-tsb-wrapper').length && window.cpai_tsb_data && Array.isArray(window.cpai_tsb_data.platforms)) {
-			new CoachProBrandingSystem(window.cpai_tsb_data);
+		if (!window.cpai_tsb_data || !Array.isArray(window.cpai_tsb_data.platforms)) {
+			return;
 		}
+
+		$('.cpai-tsb-wrapper').each(function() {
+			new CoachProBrandingSystem(window.cpai_tsb_data, $(this));
+		});
 	});
 
 })( jQuery );

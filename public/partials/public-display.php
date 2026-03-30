@@ -15,7 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
-<div id="cpai-tsb-wrapper" class="cpai-tsb-wrapper">
+<?php $instance_id = wp_unique_id( 'cpai-tsb-' ); ?>
+<div id="<?php echo esc_attr( $instance_id ); ?>" class="cpai-tsb-wrapper" data-cpai-instance="<?php echo esc_attr( $instance_id ); ?>">
 
     <!-- Static Title -->
     <div class="cpai-tsb-main-title">
@@ -24,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
     <!-- Sticky Header Navigation -->
     <div class="cpai-tsb-sticky-header">
-        <div class="cpai-tsb-platforms-nav" id="cpai-tsb-platforms-nav">
+        <div class="cpai-tsb-platforms-nav">
             <!-- Platforms injected via JS -->
         </div>
 
@@ -35,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     </div>
 
     <!-- Main Content Area -->
-    <div id="cpai-tsb-content" class="cpai-tsb-content">
+    <div class="cpai-tsb-content">
         <!-- Platform specific content will be injected here -->
         <div class="cpai-tsb-loading">Loading Branding System...</div>
     </div>
