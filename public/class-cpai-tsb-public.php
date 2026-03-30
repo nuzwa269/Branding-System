@@ -28,6 +28,16 @@ class CPAI_TSB_Public {
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cpai-tsb-public.js', array( 'jquery' ), $this->version, false );
 
+		$payload = $this->get_public_payload();
+
+		wp_localize_script(
+			$this->plugin_name,
+			'cpai_tsb_data',
+			$payload
+		);
+	}
+
+	private function get_public_payload() {
 		$platforms = $this->get_public_platforms();
 		$settings  = wp_parse_args(
 			get_option( 'cpai_tsb_settings', array() ),
@@ -36,22 +46,18 @@ class CPAI_TSB_Public {
 			)
 		);
 
-		wp_localize_script(
-			$this->plugin_name,
-			'cpai_tsb_data',
-			array(
-				'platforms' => $platforms,
-				'strings'   => array(
-					'title'      => $settings['dashboard_title'],
-					'completed'  => 'Questions Completed',
-					'next_phase' => 'اگلے مرحلے پر جائیں',
-					'finish'     => 'Finish',
-					'yes'        => 'Yes',
-					'no'         => 'No',
-					'great_en'   => 'Great! You can move to the next question.',
-					'great_ur'   => 'بہت اچھا! اب اگلے سوال کی طرف بڑھیں۔',
-				),
-			)
+		return array(
+			'platforms' => $platforms,
+			'strings'   => array(
+				'title'      => $settings['dashboard_title'],
+				'completed'  => 'Questions Completed',
+				'next_phase' => 'اگلے مرحلے پر جائیں',
+				'finish'     => 'Finish',
+				'yes'        => 'Yes',
+				'no'         => 'No',
+				'great_en'   => 'Great! You can move to the next question.',
+				'great_ur'   => 'بہت اچھا! اب اگلے سوال کی طرف بڑھیں۔',
+			),
 		);
 	}
 
@@ -381,6 +387,7 @@ class CPAI_TSB_Public {
 	}
 
 	public function render_shortcode( $atts ) {
+		$cpai_tsb_payload = $this->get_public_payload();
 		ob_start();
 		include plugin_dir_path( __FILE__ ) . 'partials/public-display.php';
 		return ob_get_clean();
