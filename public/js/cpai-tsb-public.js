@@ -99,11 +99,6 @@
 			const card = $(`<article class="cpai-question-card" id="q-card-${platformId}-${questionId}" data-id="${questionId}"></article>`);
 			card.data('model', model);
 
-			const compareImages = this.createCompareImages(model.compare);
-			if (compareImages) {
-				card.append(compareImages);
-			}
-
 			const title = $('<h4 class="cpai-question-text"></h4>')
 				.attr('data-en', model.question.en)
 				.attr('data-ur', model.question.ur)
@@ -396,6 +391,10 @@
 			const trimmed = String(toolLink).trim();
 			if (!trimmed) {
 				return '';
+			}
+
+			if (/<[a-z][\s\S]*>/i.test(trimmed)) {
+				return trimmed;
 			}
 
 			if (/^https?:\/\//i.test(trimmed)) {
